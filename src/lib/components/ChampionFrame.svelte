@@ -1,18 +1,18 @@
 <script lang="ts">
+	import { champions, getImageURL } from "$lib/data/data_dragon";
 	import { Lane, addFavorite, hasFavorite, removeFavorite } from "$lib/data/stores";
 
-    export let champion: string = "Aatrox";
+    export let champion: string;
 
-    let imageURL: string = dd_lookup_image_url(champion);
-
-    $: champion && setImageURL(dd_lookup_image_url(champion));
+    let name: string = "";
+    let imageURL: string = getImageURL(champion);
 
     function setImageURL(url: string) {
         imageURL = url;
     }
 
-    function dd_lookup_image_url(champion: string) {
-        return `https://ddragon.leagueoflegends.com/cdn/13.24.1/img/champion/${champion}.png`;
+    function dd_lookup_name(champion: string) {
+        return champions[champion].name;
     }
 
     function getContextMenuDimension(node: HTMLElement){
