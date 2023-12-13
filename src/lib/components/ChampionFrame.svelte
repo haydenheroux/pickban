@@ -49,8 +49,9 @@
         showContextMenu = false;
     }
 </script>
+
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div class="container" on:contextmenu|preventDefault={openContextMenu}>
+<div class="champion-frame" on:contextmenu|preventDefault={openContextMenu}>
     <div class="portrait" style="background-image: url({imageURL})">
     </div>
     <span class="name">
@@ -73,7 +74,7 @@
 <svelte:window on:click={closeContextMenu} />
 
 <style>
-    .container {
+    .champion-frame {
         width: 5rem;
 
         display: flex;
@@ -117,7 +118,6 @@
     .context-menu ul li {
         display: block;
         list-style-type: none;
-        width: 1fr;
     }
 
     .context-menu ul li button {
