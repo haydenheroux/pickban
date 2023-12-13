@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { champions, getImageURL, latestVersion } from "$lib/data/data_dragon";
+	import { champions, getChampionName, getImageURL } from "$lib/data/data_dragon";
 	import { Lane, addFavorite, hasFavorite, removeFavorite } from "$lib/data/stores";
 
     export let champion: string;
 
-    let name: string = "";
-    let imageURL: string = getImageURL(latestVersion, champion);
+    let name: string = getChampionName(champion);
+    let imageURL: string = getImageURL(champion);
 
     function setImageURL(url: string) {
         imageURL = url;
@@ -56,9 +56,9 @@
 <div class="champion-frame" on:contextmenu|preventDefault={openContextMenu}>
     <div class="portrait" style="background-image: url({imageURL})">
     </div>
-    <span class="name">
-        {champion}
-    </span>
+    <p class="name">
+        {name}
+    </p>
 </div>
 
 {#if showContextMenu}
@@ -115,10 +115,11 @@
         background-position: center;
         background-repeat: no-repeat;
 
-        border-radius: var(--clr-element);
+        border-radius: var(--radius-element);
     }
 
     .name {
+        font-size: var(--fs-100);
         white-space: nowrap;
     }
 

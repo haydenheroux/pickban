@@ -18,6 +18,10 @@ export const json = await getChampions(latestVersion);
 
 export const champions = json.data;
 
-export function getImageURL(version: string, champion: string) {
-    return `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champion}.png`;
+export function getChampionName(champion: string) {
+    return champions[champion].name;
+}
+
+export function getImageURL(champion: string) {
+    return `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/champion/${champion}.png`;
 }
