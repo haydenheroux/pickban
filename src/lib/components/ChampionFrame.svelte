@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { Lane, addFavorite, hasFavorite, removeFavorite } from "$lib/data/stores";
+
     export let champion: string = "Aatrox";
 
     let imageURL: string = dd_lookup_image_url(champion);
@@ -62,11 +64,31 @@
 {#if showContextMenu}
     <nav use:getContextMenuDimension class="context-menu" style="position: absolute; left: {pos.x}px; top: {pos.y}px;">
         <ul>
-            <li><button on:click={() => console.log("top")}>Favorite for Top</button></li>
-            <li><button on:click={() => console.log("jungle")}>Favorite for Jungle</button></li>
-            <li><button on:click={() => console.log("middle")}>Favorite for Middle</button></li>
-            <li><button on:click={() => console.log("bottom")}>Favorite for Bottom</button></li>
-            <li><button on:click={() => console.log("support")}>Favorite for Support</button></li>
+            {#if hasFavorite(Lane.Top, champion)}
+                <li><button on:click={() => removeFavorite(Lane.Top, champion)}>Unfavorite for Top</button></li>
+            {:else}
+                <li><button on:click={() => addFavorite(Lane.Top, champion)}>Favorite for Top</button></li>
+            {/if}
+            {#if hasFavorite(Lane.Jungle, champion)}
+                <li><button on:click={() => removeFavorite(Lane.Jungle, champion)}>Unfavorite for Jungle</button></li>
+            {:else}
+                <li><button on:click={() => addFavorite(Lane.Jungle, champion)}>Favorite for Jungle</button></li>
+            {/if}
+            {#if hasFavorite(Lane.Middle, champion)}
+                <li><button on:click={() => removeFavorite(Lane.Middle, champion)}>Unfavorite for Middle</button></li>
+            {:else}
+                <li><button on:click={() => addFavorite(Lane.Middle, champion)}>Favorite for Middle</button></li>
+            {/if}
+            {#if hasFavorite(Lane.Bottom, champion)}
+                <li><button on:click={() => removeFavorite(Lane.Bottom, champion)}>Unfavorite for Bottom</button></li>
+            {:else}
+                <li><button on:click={() => addFavorite(Lane.Bottom, champion)}>Favorite for Bottom</button></li>
+            {/if}
+            {#if hasFavorite(Lane.Support, champion)}
+                <li><button on:click={() => removeFavorite(Lane.Support, champion)}>Unfavorite for Support</button></li>
+            {:else}
+                <li><button on:click={() => addFavorite(Lane.Support, champion)}>Favorite for Support</button></li>
+            {/if}
         </ul>
     </nav>
 {/if}
