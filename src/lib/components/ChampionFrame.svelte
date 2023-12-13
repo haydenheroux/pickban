@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { champions, getImageURL } from "$lib/data/data_dragon";
+	import { champions, getImageURL, latestVersion } from "$lib/data/data_dragon";
 	import { Lane, addFavorite, hasFavorite, removeFavorite } from "$lib/data/stores";
 
     export let champion: string;
 
     let name: string = "";
-    let imageURL: string = getImageURL(champion);
+    let imageURL: string = getImageURL(latestVersion, champion);
 
     function setImageURL(url: string) {
         imageURL = url;

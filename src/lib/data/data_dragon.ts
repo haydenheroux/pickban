@@ -1,14 +1,23 @@
-async function getChampions() {
-    const response = await fetch("https://ddragon.leagueoflegends.com/cdn/13.24.1/data/en_US/champion.json");
+async function getLatestVersion() {
+    const response = await fetch("https://ddragon.leagueoflegends.com/api/versions.json");
+    const json = await response.json();
+
+    return json[0];
+}
+
+async function getChampions(version: string) {
+    const response = await fetch(`https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/champion.json`);
     const json = await response.json();
 
     return json;
 }
 
-export const json = await getChampions();
+export const latestVersion = await getLatestVersion();
+
+export const json = await getChampions(latestVersion);
 
 export const champions = json.data;
 
-export function getImageURL(champion: string) {
-    return `https://ddragon.leagueoflegends.com/cdn/${json.version}/img/champion/${champion}.png`;
+export function getImageURL(version: string, champion: string) {
+    return `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champion}.png`;
 }
