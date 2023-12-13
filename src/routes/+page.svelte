@@ -17,9 +17,4 @@
 		flex-wrap: wrap;
 		gap: var(--section-gap);
 	}
-
-	div * {
-		flex-basis: 16.666667%;
-		max-width: 16.666667%;
-	}
 </style>
