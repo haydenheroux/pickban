@@ -64,7 +64,7 @@
 	--layout-gap: 2rem;
 	--layout-width-phone: 20em;
 	--layout-width-tablet: 32em;
-	--layout-width-desktop: 40em;
+	--layout-width-desktop: 60em;
 }
 
 @media (prefers-color-scheme: light) {
@@ -402,7 +402,7 @@ footer .container {
 	}
 }
 
-@media screen and (min-width: 100rem) {
+@media screen and (min-width: 70rem) {
 	/* desktop */
 	.container {
 		max-width: var(--layout-width-desktop);

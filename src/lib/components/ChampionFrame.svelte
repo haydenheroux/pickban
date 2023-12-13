@@ -93,7 +93,7 @@
         background-position: center;
         background-repeat: no-repeat;
 
-        border-radius: 0.5rem;
+        border-radius: var(--clr-element);
     }
 
     .name {
@@ -102,9 +102,9 @@
 
     .context-menu {
         display: inline-flex;
-        border: 1px black solid;
-        background-color: white;
-        border-radius: 0.5rem;
+        border: 1px solid var(--clr-border);
+        background-color: var(--clr-background);
+        border-radius: var(--radius-layout);
         overflow: hidden;
         display: flex;
         flex-direction: column;
@@ -125,7 +125,12 @@
         width: 100%;
         text-align: left;
         border: 0px;
-        background-color: white;
+        background-color: var(--clr-background);
+        color: var(--clr-muted);
         white-space: nowrap;
+    }
+
+    .context-menu ul li button:hover {
+        color: var(--clr-foreground);
     }
 </style>
