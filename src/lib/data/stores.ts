@@ -1,12 +1,12 @@
-import { publisher } from "$lib/util/publisher";
+import { trigger } from "$lib/util/trigger";
 import { storable } from "$lib/util/storable";
 
 export enum Lane {
-    Top = "TOP",
-    Jungle = "JUNGLE",
-    Middle = "MIDDLE",
-    Bottom = "BOTTOM",
-    Support = "SUPPORT"
+    Top = "Top",
+    Jungle = "Jungle",
+    Middle = "Middle",
+    Bottom = "Bottom",
+    Support = "Support"
 } 
 
 export const favorites = storable<Record<Lane, Array<string>>>("favorites", {} as Record<Lane, Array<string>>);
@@ -47,4 +47,4 @@ export function removeFavorite(lane: Lane, champion: string) {
     favorites.set(favoritesObject);
 }
 
-export const contextMenu = publisher();
+export const hideContextMenus = trigger();

@@ -1,11 +1,11 @@
-export function publisher() {
+export function trigger() {
     const callbacks: Array<() => void> = [] as Array<() => void>;
 
     return {
-        subscribe: (callback: () => void) => {
+        onTrigger: (callback: () => void) => {
             callbacks.push(callback);
         },
-        publish: () => {
+        trigger: () => {
             for (const callback of callbacks) {
                 callback();
             }
