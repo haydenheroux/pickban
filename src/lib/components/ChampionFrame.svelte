@@ -41,17 +41,8 @@
             h: window.innerHeight
         }
 
-        if (mouse.x + menu.x > browser.x + browser.w) {
-            menu.x = mouse.x - menu.x;
-        } else {
-            menu.x = mouse.x;
-        }
-
-        if (mouse.y + menu.y > browser.y + browser.y) {
-            menu.y  = mouse.y - menu.y;
-        } else {
-            menu.y = mouse.y;
-        }
+        menu.x = mouse.x;
+        menu.y = mouse.y;
     }
 
     function closeContextMenu() {
