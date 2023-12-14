@@ -1,3 +1,4 @@
+import { publisher } from "$lib/util/publisher";
 import { storable } from "$lib/util/storable";
 
 export enum Lane {
@@ -45,3 +46,5 @@ export function removeFavorite(lane: Lane, champion: string) {
 
     favorites.set(favoritesObject);
 }
+
+export const contextMenu = publisher();

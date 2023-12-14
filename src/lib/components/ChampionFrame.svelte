@@ -1,50 +1,57 @@
 <script lang="ts">
-	import { champions, getChampionName, getImageURL } from "$lib/data/data_dragon";
-	import { Lane, addFavorite, hasFavorite, removeFavorite } from "$lib/data/stores";
+	import { getChampionName, getImageURL } from "$lib/data/data_dragon";
+	import { Lane, addFavorite, contextMenu as hideContextMenus, hasFavorite, removeFavorite } from "$lib/data/stores";
 
     export let champion: string;
 
     let name: string = getChampionName(champion);
     let imageURL: string = getImageURL(champion);
 
-    function setImageURL(url: string) {
-        imageURL = url;
-    }
-
-    function dd_lookup_name(champion: string) {
-        return champions[champion].name;
-    }
-
-    function getContextMenuDimension(node: HTMLElement){
-        let height = node.offsetHeight
-        let width = node.offsetWidth
-        menu = {
-            h: height,
-            w: width
+    function getContextMenuDimension(node: HTMLElement) {
+        menuDimension = {
+            h: node.offsetHeight,
+            w: node.offsetWidth
         }
     }
 
-    let pos = {x: 0, y: 0};
-    let menu = {h: 0, w: 0};
-    let browser = {w: 0, h: 0};
+    let mouse = {x: 0, y: 0};
+    let menu = {x: 0, y: 0};
+    let menuDimension = {h: 0, w: 0};
+    let browser = {x: 0, y: 0, w: 0, h: 0};
 
     let showContextMenu: boolean = false;
 
+    hideContextMenus.subscribe(() => {
+        showContextMenu = false;
+    });
+
     function openContextMenu(e: any) {
+        hideContextMenus.publish();
+
         showContextMenu = true;
 
+        mouse = {
+            x: e.pageX,
+            y: e.pageY
+        }
         browser = {
+            x: window.scrollX,
+            y: window.scrollY,
             w: window.innerWidth,
             h: window.innerHeight
         }
-        pos = {
-            x: e.clientX,
-            y: e.clientY
+
+        if (mouse.x + menu.x > browser.x + browser.w) {
+            menu.x = mouse.x - menu.x;
+        } else {
+            menu.x = mouse.x;
         }
-        if (browser.h -  pos.y < menu.h)
-            pos.y = pos.y - menu.h
-        if (browser.w -  pos.x < menu.w)
-            pos.x = pos.x - menu.w
+
+        if (mouse.y + menu.y > browser.y + browser.y) {
+            menu.y  = mouse.y - menu.y;
+        } else {
+            menu.y = mouse.y;
+        }
     }
 
     function closeContextMenu() {
@@ -62,8 +69,10 @@
 </div>
 
 {#if showContextMenu}
-    <nav use:getContextMenuDimension class="context-menu" style="position: absolute; left: {pos.x}px; top: {pos.y}px;">
+    <nav use:getContextMenuDimension class="context-menu" style="position: absolute; left: {menu.x}px; top: {menu.y}px;" on:contextmenu|preventDefault={() => {}}>
         <ul>
+            <li><p>{name}</p></li>
+            <li><hr></li>
             {#if hasFavorite(Lane.Top, champion)}
                 <li><button on:click={() => removeFavorite(Lane.Top, champion)}>Unfavorite for Top</button></li>
             {:else}
@@ -93,7 +102,7 @@
     </nav>
 {/if}
 
-<svelte:window on:click={closeContextMenu} />
+<svelte:window on:click={closeContextMenu} on:message={() => showContextMenu = false}/>
 
 <style>
     .champion-frame {
@@ -141,6 +150,7 @@
     .context-menu ul li {
         display: block;
         list-style-type: none;
+        color: var(--clr-foreground);
     }
 
     .context-menu ul li button {
@@ -151,6 +161,7 @@
         background-color: var(--clr-background);
         color: var(--clr-muted);
         white-space: nowrap;
+        padding: 0;
     }
 
     .context-menu ul li button:hover {
