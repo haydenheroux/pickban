@@ -119,14 +119,13 @@
 
 	.picker {
 		display: flex;
-		flex: 0 1 auto;
 		flex-direction: row;
 		justify-content: center;
 		flex-wrap: wrap;
 		gap: var(--section-gap);
 
 		height: 100%;
-		overflow-y: auto;
+		overflow-y: scroll;
 	}
 
 	.blue {
