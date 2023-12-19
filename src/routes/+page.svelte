@@ -2,6 +2,7 @@
 	import ChampionFrame from "$lib/components/ChampionFrame.svelte";
 	import { championIDs } from "$lib/data/data_dragon";
 
+	let previous: any;
 	let selected: string | null = null;
 
 	let blueBans: Array<string | null> = [null, null, null, null, null];
@@ -26,16 +27,21 @@
 		} else if (selectionIsNotEmpty && clickedIsNotEmpty) {
 			// Try to swap
 			event.detail.setChampionID(selected);
+
+			previous.setChampionID(championID);
+
 			selected = null;
 		}
 
-		generateSelectedMap();
+		previous = event.detail;
+
+		updateSelectedMap();
 	}
 
 	let selectedMap: Record<string, boolean> = {};
-	generateSelectedMap();
+	updateSelectedMap();
 
-	function generateSelectedMap() {
+	function updateSelectedMap() {
 		for (let championID of championIDs) {
 			selectedMap[championID] = championID == selected;
 		}
@@ -44,70 +50,38 @@
 
 <div class="bans-container">
 	<div class="bans">
-		<ChampionFrame bind:championID={blueBans[0]} on:message={handle} hideName={true} />
-		<ChampionFrame bind:championID={blueBans[1]} on:message={handle} hideName={true} />
-		<ChampionFrame bind:championID={blueBans[2]} hideName={true} />
-		<ChampionFrame bind:championID={blueBans[3]} hideName={true} />
-		<ChampionFrame bind:championID={blueBans[4]} hideName={true} />
+		{#each Array(5) as _, i }
+			<ChampionFrame bind:championID={blueBans[i]} on:message={handle} hideName={true} settable={true} />
+		{/each}
 	</div>
 	<div class="bans">
-		<ChampionFrame bind:championID={redBans[0]} hideName={true} />
-		<ChampionFrame bind:championID={redBans[1]} hideName={true} />
-		<ChampionFrame bind:championID={redBans[2]} hideName={true} />
-		<ChampionFrame bind:championID={redBans[3]} hideName={true} />
-		<ChampionFrame bind:championID={redBans[4]} hideName={true} />
+		{#each Array(5) as _, i }
+			<ChampionFrame bind:championID={redBans[i]} on:message={handle} hideName={true} settable={true} />
+		{/each}
 	</div>
 </div>
 
 <div class="tri">
 	<div class="picks">
-		<div>
-			<h2 class="blue">B1</h2>
-			<ChampionFrame bind:championID={bluePicks[0]} hideName={true} />
-		</div>
-		<div>
-			<h2 class="blue">B2</h2>
-			<ChampionFrame bind:championID={bluePicks[1]} hideName={true} />
-		</div>
-		<div>
-			<h2 class="blue">B3</h2>
-			<ChampionFrame bind:championID={bluePicks[2]} hideName={true} />
-		</div>
-		<div>
-			<h2 class="blue">B4</h2>
-			<ChampionFrame bind:championID={bluePicks[3]} hideName={true} />
-		</div>
-		<div>
-			<h2 class="blue">B5</h2>
-			<ChampionFrame bind:championID={bluePicks[4]} hideName={true} />
-		</div>
+		{#each Array(5) as _, i}
+			<div>
+				<h2 class="blue">B{i + 1}</h2>
+				<ChampionFrame bind:championID={bluePicks[i]} on:message={handle} hideName={true} settable={true} />
+			</div>
+		{/each}
 	</div>
 	<div class="picker">
 		{#each championIDs as championID}
-			<ChampionFrame {championID} on:message={handle} bind:selected={selectedMap[championID]}/>
+			<ChampionFrame {championID} on:message={handle} bind:selected={selectedMap[championID]} />
 		{/each}
 	</div>
 	<div class="picks">
-		<div>
-			<ChampionFrame bind:championID={redPicks[0]} hideName={true} />
-			<h2 class="red">R1</h2>
-		</div>
-		<div>
-			<ChampionFrame bind:championID={redPicks[1]} hideName={true} />
-			<h2 class="red">R2</h2>
-		</div>
-		<div>
-			<ChampionFrame bind:championID={redPicks[2]} hideName={true} />
-			<h2 class="red">R3</h2>
-		</div>
-		<div>
-			<ChampionFrame bind:championID={redPicks[3]} hideName={true} />
-			<h2 class="red">R4</h2>
-		</div>
-		<div>
-			<ChampionFrame bind:championID={redPicks[4]} hideName={true} />
-			<h2 class="red">R5</h2>
-		</div>
+		{#each Array(5) as _, i}
+			<div>
+				<ChampionFrame bind:championID={redPicks[i]} on:message={handle} hideName={true} settable={true} />
+				<h2 class="red">R{i + 1}</h2>
+			</div>
+		{/each}
 	</div>
 </div>
 

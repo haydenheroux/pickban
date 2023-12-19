@@ -4,6 +4,7 @@
 	import { createEventDispatcher } from "svelte";
 
     export let hideName: boolean = false;
+    export let settable: boolean = false;
 
     export let selected: boolean = false;
 
@@ -13,7 +14,9 @@
         dispatch("message", {
             championID: championID,
             setChampionID: (newChampionID: string | null) => {
-                championID = newChampionID;
+                if (settable) {
+                    championID = newChampionID;
+                }
             }
         });
     }
