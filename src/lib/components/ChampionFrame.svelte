@@ -77,6 +77,14 @@
     function closeContextMenu() {
         showContextMenu = false;
     }
+
+    const lanes = [
+        {lane: Lane.Top, src: "top.png"},
+        {lane: Lane.Jungle, src: "jungle.png"},
+        {lane: Lane.Middle, src: "middle.png"},
+        {lane: Lane.Bottom, src: "bottom.png"},
+        {lane: Lane.Support, src: "support.png"},
+    ];
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -99,11 +107,27 @@
         <ul>
             <li><p>{name}</p></li>
             <li><hr></li>
-            {#each [Lane.Top, Lane.Jungle, Lane.Middle, Lane.Bottom, Lane.Support] as lane}
+            {#each lanes as {lane, src}}
                 {#if hasFavorite(lane, championID)}
-                    <li><button on:click={() => removeFavorite(lane, championID)}>Unfavorite for {lane}</button></li>
+                    <li>
+                        <!-- svelte-ignore a11y-click-events-have-key-events -->
+                        <!-- svelte-ignore a11y-no-static-element-interactions -->
+                        <div on:click={() => removeFavorite(lane, championID)}>
+                            <!-- svelte-ignore a11y-missing-attribute -->
+                            <img {src}>
+                            <button>Unfavorite for {lane}</button>
+                        </div>
+                    </li>
                 {:else}
-                    <li><button on:click={() => addFavorite(lane, championID)}>Favorite for {lane}</button></li>
+                    <li>
+                        <!-- svelte-ignore a11y-click-events-have-key-events -->
+                        <!-- svelte-ignore a11y-no-static-element-interactions -->
+                        <div on:click={() => addFavorite(lane, championID)}>
+                            <!-- svelte-ignore a11y-missing-attribute -->
+                            <img {src}>
+                            <button>Favorite for {lane}</button>
+                        </div>
+                    </li>
                 {/if}
             {/each}
         </ul>
@@ -188,7 +212,18 @@
         color: var(--clr-foreground);
     }
 
-    .context-menu ul li button {
+    .context-menu ul li div {
+        display: flex;
+        gap: 0.25rem;
+        align-items: center;
+    }
+
+    .context-menu ul li div img {
+        height: 1rem;
+        filter: grayscale();
+    }
+
+    .context-menu ul li div button {
         font-size: 1rem;
         width: 100%;
         text-align: left;
@@ -199,7 +234,12 @@
         padding: 0;
     }
 
-    .context-menu ul li button:hover {
+    .context-menu ul li div:hover button {
         color: var(--clr-foreground);
+    }
+
+    .context-menu ul li div:hover img {
+        color: var(--clr-foreground);
+        filter: grayscale() brightness(200%);
     }
 </style>
