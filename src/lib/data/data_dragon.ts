@@ -16,12 +16,15 @@ export const latestVersion = await getLatestVersion();
 
 export const json = await getChampions(latestVersion);
 
-export const champions = json.data;
+const championsByID = json.data;
 
-export function getChampionName(champion: string) {
-    return champions[champion].name;
+export const championIDs = Object.keys(championsByID);
+
+export function getChampionByID(championID: string) {
+    // TODO Guard against null?
+    return championsByID[championID];
 }
 
-export function getImageURL(champion: string) {
-    return `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/champion/${champion}.png`;
+export function getImageURL(championID: string) {
+    return `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/champion/${championID}.png`;
 }

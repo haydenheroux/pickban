@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { getChampionName, getImageURL } from "$lib/data/data_dragon";
+	import { getChampionByID, getImageURL } from "$lib/data/data_dragon";
 	import { Lane, addFavorite, hideContextMenus, hasFavorite, removeFavorite } from "$lib/data/stores";
 
-    export let champion: string;
+    export let championID: string;
 
-    let name: string = getChampionName(champion);
-    let imageURL: string = getImageURL(champion);
+    let name: string = getChampionByID(championID).name;
+    let imageURL: string = getImageURL(championID);
 
     function getContextMenuDimension(node: HTMLElement) {
         menuDimension = {
@@ -65,10 +65,10 @@
             <li><p>{name}</p></li>
             <li><hr></li>
             {#each [Lane.Top, Lane.Jungle, Lane.Middle, Lane.Bottom, Lane.Support] as lane}
-                {#if hasFavorite(lane, champion)}
-                    <li><button on:click={() => removeFavorite(lane, champion)}>Unfavorite for {lane}</button></li>
+                {#if hasFavorite(lane, championID)}
+                    <li><button on:click={() => removeFavorite(lane, championID)}>Unfavorite for {lane}</button></li>
                 {:else}
-                    <li><button on:click={() => addFavorite(lane, champion)}>Favorite for {lane}</button></li>
+                    <li><button on:click={() => addFavorite(lane, championID)}>Favorite for {lane}</button></li>
                 {/if}
             {/each}
         </ul>
