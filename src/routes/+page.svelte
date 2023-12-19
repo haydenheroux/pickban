@@ -2,7 +2,7 @@
 	import ChampionFrame from "$lib/components/ChampionFrame.svelte";
 	import { championIDs } from "$lib/data/data_dragon";
 
-	let previous: any;
+	let previous: any | null = null;
 	let selected: string | null = null;
 
 	let blueBans: Array<string | null> = [null, null, null, null, null];
@@ -14,22 +14,15 @@
 	function handle(event: any) {
 		const championID = event.detail.championID;
 
-		const selectionIsEmpty = selected == null;
-		const selectionIsNotEmpty = !selectionIsEmpty;
-		const clickedIsEmpty = championID == null;
-		const clickedIsNotEmpty = !clickedIsEmpty;
-
-		if (selectionIsEmpty) {
+		if (selected == null) {
 			selected = championID;
-		} else if (selectionIsNotEmpty && clickedIsEmpty) {
-			event.detail.setChampionID(selected);
-			selected = null;
-		} else if (selectionIsNotEmpty && clickedIsNotEmpty) {
-			// Try to swap
-			event.detail.setChampionID(selected);
+		} else {
+			if (previous != null) {
+				previous.setChampionID(championID);
+			}
 
-			previous.setChampionID(championID);
-
+			event.detail.setChampionID(selected);
+			
 			selected = null;
 		}
 
