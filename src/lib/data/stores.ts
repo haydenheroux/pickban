@@ -11,21 +11,25 @@ export enum Lane {
 
 export const favorites = storable<Record<Lane, Array<string>>>("favorites", {} as Record<Lane, Array<string>>);
 
-export function hasFavorite(lane: Lane, champion: string): boolean {
+export function hasFavorite(lane: Lane, championIDOrNull: string | null): boolean {
+    if (championIDOrNull == null) return false;
+
     const favoritesObject = favorites.get();
 
     const laneFavorites = new Set(favoritesObject[lane]);
 
-    return laneFavorites.has(champion);
+    return laneFavorites.has(championIDOrNull);
 }
 
-export function addFavorite(lane: Lane, champion: string) {
+export function addFavorite(lane: Lane, championIDOrNull: string | null) {
+    if (championIDOrNull == null) return;
+
     const favoritesObject = favorites.get();
 
     const laneFavorites = new Set(favoritesObject[lane]);
 
-    if (!laneFavorites.has(champion)) {
-        laneFavorites.add(champion);
+    if (!laneFavorites.has(championIDOrNull)) {
+        laneFavorites.add(championIDOrNull);
     }
 
     favoritesObject[lane] = [...laneFavorites];
@@ -33,13 +37,15 @@ export function addFavorite(lane: Lane, champion: string) {
     favorites.set(favoritesObject);
 }
 
-export function removeFavorite(lane: Lane, champion: string) {
+export function removeFavorite(lane: Lane, championIDOrNull: string | null) {
+    if (championIDOrNull == null) return;
+
     const favoritesObject = favorites.get();
 
     const laneFavorites = new Set(favoritesObject[lane]);
 
-    if (laneFavorites.has(champion)) {
-        laneFavorites.delete(champion);
+    if (laneFavorites.has(championIDOrNull)) {
+        laneFavorites.delete(championIDOrNull);
     }
 
     favoritesObject[lane] = [...laneFavorites];

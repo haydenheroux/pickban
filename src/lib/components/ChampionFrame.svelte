@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { getChampionByID, getImageURL } from "$lib/data/data_dragon";
+	import { getChampionNameByID, getImageURL } from "$lib/data/data_dragon";
 	import { Lane, addFavorite, hideContextMenus, hasFavorite, removeFavorite } from "$lib/data/stores";
 
-    export let championID: string;
+    export let championID: string | null = null;
 
-    let name: string = getChampionByID(championID).name;
+    let name: string = getChampionNameByID(championID);
     let imageURL: string = getImageURL(championID);
 
     function getContextMenuDimension(node: HTMLElement) {
@@ -52,11 +52,16 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="champion-frame" on:contextmenu|preventDefault={openContextMenu}>
-    <div class="portrait" style="background-image: url({imageURL})">
-    </div>
-    <p class="name">
-        {name}
-    </p>
+    {#if imageURL.length > 0 }
+        <div class="portrait" style="background-image: url({imageURL});" />
+    {:else}
+        <div class="portrait" style="border: 1px solid var(--clr-neutral-800);" />
+    {/if}
+    {#if name.length > 0}
+        <p class="name">
+            {name}
+        </p>
+    {/if}
 </div>
 
 {#if showContextMenu}

@@ -20,11 +20,24 @@ const championsByID = json.data;
 
 export const championIDs = Object.keys(championsByID);
 
-export function getChampionByID(championID: string) {
-    // TODO Guard against null?
+export function getChampionByID(championIDOrNull: string | null) {
+    if (championIDOrNull == null) return null;
+
+    const championID = championIDOrNull;
+
     return championsByID[championID];
 }
 
-export function getImageURL(championID: string) {
+export function getChampionNameByID(championIDOrNull: string | null): string {
+    if (championIDOrNull == null) return "";
+
+    return getChampionByID(championIDOrNull).name;
+}
+
+export function getImageURL(championIDOrNull: string | null): string {
+    if (championIDOrNull == null) return "";
+
+    const championID = championIDOrNull;
+
     return `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/champion/${championID}.png`;
 }

@@ -35,7 +35,9 @@
 	--clr-neutral-700: #595959;
 	--clr-neutral-800: #373737;
 	--clr-neutral-900: #090909;
-
+	--clr-red: #ff4253;
+    --clr-blue: #5385ff;	
+	
 	/* element colors */
 	--clr-background: var(--clr-neutral-900);
 	--clr-foreground: var(--clr-neutral-100);
