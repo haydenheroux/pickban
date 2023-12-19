@@ -12,6 +12,8 @@
     const dispatch = createEventDispatcher();
 
     function onClick() {
+        if (disabled) return;
+
         dispatch("message", {
             championID: championID,
             setChampionID: (newChampionID: string | null) => {
@@ -79,7 +81,7 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="champion-frame {big ? "big" : ""}" on:contextmenu|preventDefault={openContextMenu} on:click|preventDefault={onClick}>
+<div class="champion-frame {big ? "big" : ""} {disabled ? "disabled" : ""}" on:contextmenu|preventDefault={openContextMenu} on:click|preventDefault={onClick}>
     {#if imageURL.length > 0 }
         <div class="portrait {selected ? "gold" : ""} {disabled ? "disabled" : ""}" style="background-image: url({imageURL});" />
     {:else}
@@ -120,6 +122,10 @@
         gap: 0.5rem;
 
         cursor: pointer;
+    }
+
+    .champion-frame.disabled {
+        cursor: default;
     }
 
     .champion-frame.big {

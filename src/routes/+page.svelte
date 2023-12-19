@@ -5,7 +5,7 @@
 	let previous: any | null = null;
 	let selected: string | null = null;
 
-	let blueBans: Array<string | null> = [null, null, null, null, null];
+	let blueBans = [null, null, null, null, null];
 	let redBans = [null, null, null, null, null];
 
 	let bluePicks = [null, null, null, null, null];
@@ -29,6 +29,7 @@
 		previous = event.detail;
 
 		updateSelectedMap();
+		updateDisabledMap();
 	}
 
 	let selectedMap: Record<string, boolean> = {};
@@ -37,6 +38,16 @@
 	function updateSelectedMap() {
 		for (let championID of championIDs) {
 			selectedMap[championID] = championID == selected;
+		}
+	}
+
+	let disabledMap: Record<string, boolean> = {};
+	updateDisabledMap();
+
+	function updateDisabledMap() {
+		for (let championID of championIDs) {
+			// @ts-ignore
+			disabledMap[championID] = blueBans.includes(championID) || redBans.includes(championID) || bluePicks.includes(championID) || redPicks.includes(championID);
 		}
 	}
 </script>
@@ -65,7 +76,7 @@
 	</div>
 	<div class="picker">
 		{#each championIDs as championID}
-			<ChampionFrame {championID} on:message={handle} bind:selected={selectedMap[championID]} />
+			<ChampionFrame {championID} on:message={handle} bind:selected={selectedMap[championID]} bind:disabled={disabledMap[championID]} />
 		{/each}
 	</div>
 	<div class="picks">
