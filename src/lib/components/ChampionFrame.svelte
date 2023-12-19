@@ -3,6 +3,7 @@
 	import { Lane, addFavorite, hideContextMenus, hasFavorite, removeFavorite } from "$lib/data/stores";
 	import { createEventDispatcher } from "svelte";
 
+    export let big: boolean = false;
     export let hideName: boolean = false;
     export let settable: boolean = false;
 
@@ -78,7 +79,7 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="champion-frame" on:contextmenu|preventDefault={openContextMenu} on:click|preventDefault={onClick}>
+<div class="champion-frame {big ? "big" : ""}" on:contextmenu|preventDefault={openContextMenu} on:click|preventDefault={onClick}>
     {#if imageURL.length > 0 }
         <div class="portrait {selected ? "gold" : ""} {disabled ? "disabled" : ""}" style="background-image: url({imageURL});" />
     {:else}
@@ -119,6 +120,10 @@
         gap: 0.5rem;
 
         cursor: pointer;
+    }
+
+    .champion-frame.big {
+        width: 7rem;
     }
 
     .portrait {

@@ -66,7 +66,7 @@
 		{#each Array(5) as _, i}
 			<div>
 				<h2 class="blue">B{i + 1}</h2>
-				<ChampionFrame bind:championID={bluePicks[i]} on:message={handle} hideName={true} settable={true} />
+				<ChampionFrame bind:championID={bluePicks[i]} on:message={handle} hideName={true} settable={true} big={true} />
 			</div>
 		{/each}
 	</div>
@@ -78,7 +78,7 @@
 	<div class="picks">
 		{#each Array(5) as _, i}
 			<div>
-				<ChampionFrame bind:championID={redPicks[i]} on:message={handle} hideName={true} settable={true} />
+				<ChampionFrame bind:championID={redPicks[i]} on:message={handle} hideName={true} settable={true} big={true} />
 				<h2 class="red">R{i + 1}</h2>
 			</div>
 		{/each}
@@ -97,7 +97,7 @@
 		display: grid;
 		grid-template-columns: min-content 1fr min-content;
 
-		height: 30rem;
+		height: 40rem;
 
 		gap: var(--section-gap);
 	}
