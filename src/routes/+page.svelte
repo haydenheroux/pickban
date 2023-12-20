@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ChampionFrame from "$lib/components/ChampionFrame.svelte";
 	import { championIDs } from "$lib/data/data_dragon";
-	import { Lane } from "$lib/data/stores";
+	import { Lane, isMarked } from "$lib/data/stores";
 
 	let previousEvent: any | null = null;
 	let selectedChampionID: string | null = null;
@@ -70,6 +70,29 @@
         {lane: Lane.Support, src: "support.png"},
     ];
 
+	let laneFilterOrNull: string | null = null;
+
+	function toggleLaneFilter(lane: Lane) {
+		if (laneFilterOrNull != lane) {
+			laneFilterOrNull = lane;
+			paletteChampionIDs = paletteChampionIDs.filter((championID) => isMarked(lane, championID));
+		} else {
+			laneFilterOrNull = null;
+			paletteChampionIDs = championIDs;
+		}
+
+		updateLaneFilterMap();
+	}
+
+	let laneFilterMap: Record<string, boolean> = {};
+	updateLaneFilterMap();
+
+	function updateLaneFilterMap() {
+		for (let lane of lanes) {
+			laneFilterMap[lane.lane] = laneFilterOrNull == lane.lane;
+		}
+	} 
+
 	let paletteChampionIDs = championIDs;
 </script>
 
@@ -99,7 +122,9 @@
 		<div class="filter">
 			{#each lanes as {lane, src}}
 				<!-- svelte-ignore a11y-missing-attribute -->
-				<img {src}>
+				<!-- svelte-ignore a11y-click-events-have-key-events -->
+				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+				<img {src} class="{laneFilterMap[lane] ? "selected" : ""}" on:click={() => toggleLaneFilter(lane)}>
 			{/each}
 		</div>
 		<div class="palette">
@@ -181,7 +206,7 @@
 		filter: grayscale();
 	}
 
-	.picker .filter img:hover {
+	.picker .filter img.selected {
 		filter: grayscale() brightness(200%);
 	}
 
