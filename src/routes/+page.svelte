@@ -111,7 +111,7 @@
 		display: grid;
 		grid-template-columns: min-content 1fr min-content;
 
-		height: 25rem;
+		height: 40rem;
 
 		gap: var(--section-gap);
 	}
