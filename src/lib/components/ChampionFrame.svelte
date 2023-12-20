@@ -82,7 +82,7 @@
 
 <style>
     .champion-frame {
-        width: 5rem;
+        width: 4rem;
 
         display: flex;
         flex-direction: column;
@@ -97,7 +97,7 @@
     }
 
     .champion-frame.big {
-        width: 7rem;
+        width: 5rem;
     }
 
     .portrait {
