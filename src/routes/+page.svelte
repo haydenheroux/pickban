@@ -225,10 +225,11 @@
 	}
 
 	.palette {
-		display: flex;
-		flex-direction: row;
-		justify-content: center;
-		flex-wrap: wrap;
+		display: grid;
+		justify-items: center;
+		/* TODO Determine if 6 or 7 columns looks best */
+		grid-template-columns: repeat(6, minmax(min-content, 1fr));
+		grid-auto-rows: min-content;
 		gap: var(--section-gap);
 
 		height: 100%;
