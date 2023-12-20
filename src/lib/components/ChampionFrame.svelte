@@ -5,6 +5,7 @@
 	import ChampionContextMenu from "./ChampionContextMenu.svelte";
 
     export let big: boolean = false;
+    export let struck: boolean = false;
     export let hideName: boolean = false;
     export let settable: boolean = false;
 
@@ -65,7 +66,7 @@
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="champion-frame {big ? "big" : ""} {disabled ? "disabled" : ""}" on:contextmenu|preventDefault={openContextMenu} on:click|preventDefault={onClick}>
     {#if imageURL.length > 0 }
-        <div class="portrait {selected ? "gold" : ""} {disabled ? "disabled" : ""}" style="background-image: url({imageURL});" />
+        <div class="portrait {selected ? "gold" : ""} {disabled ? "disabled" : ""} {struck ? "struck" : ""}" style="background-image: url({imageURL});" />
     {:else}
         <div class="portrait" style="border: 1px solid var(--clr-neutral-800);" />
     {/if}
@@ -106,6 +107,8 @@
         width: 100%;
         aspect-ratio: 1 / 1; /* Enforce squareness. */
 
+        position: relative;
+
         background-size: 120% 120%; /* Crop in to remove vignette.  */
         background-position: center;
         background-repeat: no-repeat;
@@ -122,6 +125,18 @@
 
     .portrait.disabled {
         filter: grayscale(100%);
+    }
+
+    .portrait.struck:after {
+        content: "";
+        height: 2px;
+        width: 141.421%;
+        background-color: var(--clr-foreground);
+        position: absolute;
+        left: 0.5px;
+        top: -0.5px;
+        transform: rotate(45deg);
+        transform-origin: 0px 0px;
     }
 
     .name {

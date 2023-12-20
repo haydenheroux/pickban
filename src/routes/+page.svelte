@@ -65,12 +65,12 @@
 <div class="bans-container">
 	<div class="bans">
 		{#each Array(5) as _, i }
-			<ChampionFrame bind:championID={blueBans[i]} on:message={handle} hideName={true} settable={true} location={"blueBan" + i} bind:selected={selectedMap["blueBan" + i]} />
+			<ChampionFrame bind:championID={blueBans[i]} on:message={handle} struck={true} hideName={true} settable={true} location={"blueBan" + i} bind:selected={selectedMap["blueBan" + i]} />
 		{/each}
 	</div>
 	<div class="bans">
 		{#each Array(5) as _, i }
-			<ChampionFrame bind:championID={redBans[i]} on:message={handle} hideName={true} settable={true} location={"redBan" + i} bind:selected={selectedMap["redBan" + i]} />
+			<ChampionFrame bind:championID={redBans[i]} on:message={handle} struck={true} hideName={true} settable={true} location={"redBan" + i} bind:selected={selectedMap["redBan" + i]} />
 		{/each}
 	</div>
 </div>
