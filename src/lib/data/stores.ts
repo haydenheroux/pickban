@@ -11,7 +11,7 @@ export enum Lane {
 
 export const favorites = storable<Record<Lane, Array<string>>>("favorites", {} as Record<Lane, Array<string>>);
 
-export function hasFavorite(lane: Lane, championIDOrNull: string | null): boolean {
+export function isFavorite(lane: Lane, championIDOrNull: string | null): boolean {
     if (championIDOrNull == null) return false;
 
     const favoritesObject = favorites.get();

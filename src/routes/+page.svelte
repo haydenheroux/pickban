@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ChampionFrame from "$lib/components/ChampionFrame.svelte";
 	import { championIDs } from "$lib/data/data_dragon";
-	import { Lane, isMarked } from "$lib/data/stores";
+	import { Lane, isFavorite } from "$lib/data/stores";
 
 	let previousEvent: any | null = null;
 	let selectedChampionID: string | null = null;
@@ -75,7 +75,7 @@
 	function toggleLaneFilter(lane: Lane) {
 		if (laneFilterOrNull != lane) {
 			laneFilterOrNull = lane;
-			paletteChampionIDs = paletteChampionIDs.filter((championID) => isMarked(lane, championID));
+			paletteChampionIDs = paletteChampionIDs.filter((championID) => isFavorite(lane, championID));
 		} else {
 			laneFilterOrNull = null;
 			paletteChampionIDs = championIDs;
