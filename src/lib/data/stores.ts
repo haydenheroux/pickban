@@ -9,48 +9,48 @@ export enum Lane {
     Support = "Support"
 } 
 
-const marksStore = storable<Record<Lane, Array<string>>>("marks", {} as Record<Lane, Array<string>>);
+export const favorites = storable<Record<Lane, Array<string>>>("favorites", {} as Record<Lane, Array<string>>);
 
-export function isMarked(lane: Lane, championIDOrNull: string | null): boolean {
+export function hasFavorite(lane: Lane, championIDOrNull: string | null): boolean {
     if (championIDOrNull == null) return false;
 
-    const marks = marksStore.get();
+    const favoritesObject = favorites.get();
 
-    const laneMarks = new Set(marks[lane]);
+    const laneFavorites = new Set(favoritesObject[lane]);
 
-    return laneMarks.has(championIDOrNull);
+    return laneFavorites.has(championIDOrNull);
 }
 
-export function addMark(lane: Lane, championIDOrNull: string | null) {
+export function addFavorite(lane: Lane, championIDOrNull: string | null) {
     if (championIDOrNull == null) return;
 
-    const marks = marksStore.get();
+    const favoritesObject = favorites.get();
 
-    const laneMarks = new Set(marks[lane]);
+    const laneFavorites = new Set(favoritesObject[lane]);
 
-    if (!laneMarks.has(championIDOrNull)) {
-        laneMarks.add(championIDOrNull);
+    if (!laneFavorites.has(championIDOrNull)) {
+        laneFavorites.add(championIDOrNull);
     }
 
-    marks[lane] = [...laneMarks];
+    favoritesObject[lane] = [...laneFavorites];
 
-    marksStore.set(marks);
+    favorites.set(favoritesObject);
 }
 
-export function removeMark(lane: Lane, championIDOrNull: string | null) {
+export function removeFavorite(lane: Lane, championIDOrNull: string | null) {
     if (championIDOrNull == null) return;
 
-    const marks = marksStore.get();
+    const favoritesObject = favorites.get();
 
-    const laneMarks = new Set(marks[lane]);
+    const laneFavorites = new Set(favoritesObject[lane]);
 
-    if (laneMarks.has(championIDOrNull)) {
-        laneMarks.delete(championIDOrNull);
+    if (laneFavorites.has(championIDOrNull)) {
+        laneFavorites.delete(championIDOrNull);
     }
 
-    marks[lane] = [...laneMarks];
+    favoritesObject[lane] = [...laneFavorites];
 
-    marksStore.set(marks);
+    favorites.set(favoritesObject);
 }
 
 export const hideContextMenus = trigger();
