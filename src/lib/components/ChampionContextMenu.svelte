@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { getChampionNameByID } from "$lib/data/data_dragon";
-	import { Lane, addFavorite, hasFavorite, removeFavorite } from "$lib/data/stores";
-isFavorite
+	import { Lane, addFavorite, isFavorite, removeFavorite } from "$lib/data/stores";
     export let championID: string | null = null;
 
     export let x: number;
@@ -27,8 +26,8 @@ isFavorite
         <li><p>{name}</p></li>
         <li><hr></li>
         {#each lanes as {lane, src}}
-            {#if hasFavorite(lane, championID)}
-                <li>isFavorite
+            {#if isFavorite(lane, championID)}
+                <li>
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <!-- svelte-ignore a11y-no-static-element-interactions -->
                     <div on:click={() => removeFavorite(lane, championID)}>
