@@ -110,7 +110,7 @@
         background-position: center;
         background-repeat: no-repeat;
 
-        border-width: 1px;
+        border-width: 2px;
         border-style: solid;
         border-color: transparent;
         border-radius: var(--radius-element);
