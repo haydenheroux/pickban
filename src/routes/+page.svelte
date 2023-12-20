@@ -1,6 +1,7 @@
 <script lang="ts">
 	import ChampionFrame from "$lib/components/ChampionFrame.svelte";
 	import { championIDs } from "$lib/data/data_dragon";
+	import { Lane } from "$lib/data/stores";
 
 	let previousEvent: any | null = null;
 	let selectedChampionID: string | null = null;
@@ -60,6 +61,16 @@
 			disabledMap["frame" + championID] = blueBans.includes(championID) || redBans.includes(championID) || bluePicks.includes(championID) || redPicks.includes(championID);
 		}
 	}
+
+    const lanes = [
+        {lane: Lane.Top, src: "top.png"},
+        {lane: Lane.Jungle, src: "jungle.png"},
+        {lane: Lane.Middle, src: "middle.png"},
+        {lane: Lane.Bottom, src: "bottom.png"},
+        {lane: Lane.Support, src: "support.png"},
+    ];
+
+	let paletteChampionIDs = championIDs;
 </script>
 
 <div class="bans-container">
@@ -85,9 +96,17 @@
 		{/each}
 	</div>
 	<div class="picker">
-		{#each championIDs as championID}
-			<ChampionFrame {championID} on:message={handle} bind:selected={selectedMap["frame" + championID]} bind:disabled={disabledMap["frame" + championID]} />
-		{/each}
+		<div class="filter">
+			{#each lanes as {lane, src}}
+				<!-- svelte-ignore a11y-missing-attribute -->
+				<img {src}>
+			{/each}
+		</div>
+		<div class="palette">
+			{#each paletteChampionIDs as championID}
+				<ChampionFrame {championID} on:message={handle} bind:selected={selectedMap["frame" + championID]} bind:disabled={disabledMap["frame" + championID]} />
+			{/each}
+		</div>
 	</div>
 	<div class="picks">
 		{#each Array(5) as _, i}
@@ -110,8 +129,6 @@
 	.tri {
 		display: grid;
 		grid-template-columns: min-content 1fr min-content;
-
-		height: 40rem;
 
 		gap: var(--section-gap);
 	}
@@ -145,6 +162,30 @@
 	}
 
 	.picker {
+		display: flex;
+		flex-direction: column;
+		gap: var(--section-gap);
+
+		height: 40rem;
+	}
+
+	.picker .filter {
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-end;
+		gap: 0.25rem;
+	}
+
+	.picker .filter img {
+		height: 2rem;
+		filter: grayscale();
+	}
+
+	.picker .filter img:hover {
+		filter: grayscale() brightness(200%);
+	}
+
+	.palette {
 		display: flex;
 		flex-direction: row;
 		justify-content: center;
