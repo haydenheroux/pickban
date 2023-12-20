@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getChampionNameByID } from "$lib/data/data_dragon";
-	import { Lane, addFavorite, hasFavorite, removeFavorite } from "$lib/data/stores";
+	import { Lane, addMark, isMarked, removeMark } from "$lib/data/stores";
 
     export let championID: string | null = null;
 
@@ -27,24 +27,24 @@
         <li><p>{name}</p></li>
         <li><hr></li>
         {#each lanes as {lane, src}}
-            {#if hasFavorite(lane, championID)}
+            {#if isMarked(lane, championID)}
                 <li>
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <!-- svelte-ignore a11y-no-static-element-interactions -->
-                    <div on:click={() => removeFavorite(lane, championID)}>
+                    <div on:click={() => removeMark(lane, championID)}>
                         <!-- svelte-ignore a11y-missing-attribute -->
                         <img {src}>
-                        <button>Unfavorite for {lane}</button>
+                        <button>Unmark for {lane}</button>
                     </div>
                 </li>
             {:else}
                 <li>
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <!-- svelte-ignore a11y-no-static-element-interactions -->
-                    <div on:click={() => addFavorite(lane, championID)}>
+                    <div on:click={() => addMark(lane, championID)}>
                         <!-- svelte-ignore a11y-missing-attribute -->
                         <img {src}>
-                        <button>Favorite for {lane}</button>
+                        <button>Mark for {lane}</button>
                     </div>
                 </li>
             {/if}
