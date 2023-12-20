@@ -134,13 +134,15 @@
     }
 
     .portrait.struck:after {
+        --span: 80%;
+        --inset: calc((100% - var(--span)) / 2);
         content: "";
         height: 2px;
-        width: 141.421%;
+        width: calc(sqrt(2) * var(--span));
         background-color: var(--clr-foreground);
         position: absolute;
-        left: 0.5px;
-        top: -0.5px;
+        left: calc(var(--inset) + 0.5px);
+        top: calc(var(--inset) - 0.5px);
         transform: rotate(45deg);
         transform-origin: 0px 0px;
     }
