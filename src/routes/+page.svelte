@@ -18,19 +18,28 @@
 
 		const championID = message.championID;
 		const location = message.location;
+		const settable = message.settable;
 
 		if (selectedChampionIDOrNull == null) {
 			selectedChampionIDOrNull = championID;
 			selectedLocationOrNull = location;
 		} else {
+			let previousSettable = false;
+
 			if (previousMessageOrNull != null) {
 				previousMessageOrNull.setChampionID(championID);
+				previousSettable = previousMessageOrNull.settable;
 			}
 
 			message.setChampionID(selectedChampionIDOrNull);
-			
-			selectedChampionIDOrNull = null;
-			selectedLocationOrNull = null;
+
+			if (settable || previousSettable) {
+				selectedChampionIDOrNull = null;
+				selectedLocationOrNull = null;
+			} else {
+				selectedChampionIDOrNull = championID;
+				selectedLocationOrNull = location;
+			}
 		}
 
 		previousMessageOrNull = message;

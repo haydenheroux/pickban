@@ -20,6 +20,7 @@
         dispatch("message", {
             championID: championID,
             location: location,
+            settable: settable,
             setChampionID: (newChampionID: string | null) => {
                 if (settable) {
                     championID = newChampionID;
