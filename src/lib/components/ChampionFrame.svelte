@@ -9,6 +9,7 @@
     export let settable: boolean = false;
 
     export let selected: boolean = false;
+    export let location: string | null = null;
 
     const dispatch = createEventDispatcher();
 
@@ -17,6 +18,7 @@
 
         dispatch("message", {
             championID: championID,
+            location: location,
             setChampionID: (newChampionID: string | null) => {
                 if (settable) {
                     championID = newChampionID;

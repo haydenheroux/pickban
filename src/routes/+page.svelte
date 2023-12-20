@@ -4,18 +4,21 @@
 
 	let previous: any | null = null;
 	let selected: string | null = null;
+	let selectedLocation: string | null = null
 
 	let blueBans = [null, null, null, null, null];
 	let redBans = [null, null, null, null, null];
 
-	let bluePicks = [null, null, null, null, null];
+	let bluePicks = [null, null, null, null, null];  
 	let redPicks = [null, null, null, null, null];
 
 	function handle(event: any) {
 		const championID = event.detail.championID;
+		const location = event.detail.location;
 
 		if (selected == null) {
 			selected = championID;
+			selectedLocation = location;
 		} else {
 			if (previous != null) {
 				previous.setChampionID(championID);
@@ -24,30 +27,37 @@
 			event.detail.setChampionID(selected);
 			
 			selected = null;
+			selectedLocation = null;
 		}
 
 		previous = event.detail;
 
-		updateSelectedMap();
-		updateDisabledMap();
+		updateSelected();
+		updateDisabled();
 	}
 
 	let selectedMap: Record<string, boolean> = {};
-	updateSelectedMap();
+	updateSelected();
 
-	function updateSelectedMap() {
+	function updateSelected() {
 		for (let championID of championIDs) {
-			selectedMap[championID] = championID == selected;
+			selectedMap["frame" + championID] = championID == selected && selectedLocation == null;
+		}
+		for (let i = 0; i < 5; i++) {
+			selectedMap["blueBan" + i] = selectedLocation == "blueBan" + i;
+			selectedMap["redBan" + i] = selectedLocation == "redBan" + i;
+			selectedMap["bluePick" + i] = selectedLocation == "bluePick" + i;
+			selectedMap["redPick" + i] = selectedLocation == "redPick" + i;
 		}
 	}
 
 	let disabledMap: Record<string, boolean> = {};
-	updateDisabledMap();
+	updateDisabled();
 
-	function updateDisabledMap() {
+	function updateDisabled() {
 		for (let championID of championIDs) {
 			// @ts-ignore
-			disabledMap[championID] = blueBans.includes(championID) || redBans.includes(championID) || bluePicks.includes(championID) || redPicks.includes(championID);
+			disabledMap["frame" + championID] = blueBans.includes(championID) || redBans.includes(championID) || bluePicks.includes(championID) || redPicks.includes(championID);
 		}
 	}
 </script>
@@ -55,12 +65,12 @@
 <div class="bans-container">
 	<div class="bans">
 		{#each Array(5) as _, i }
-			<ChampionFrame bind:championID={blueBans[i]} on:message={handle} hideName={true} settable={true} />
+			<ChampionFrame bind:championID={blueBans[i]} on:message={handle} hideName={true} settable={true} location={"blueBan" + i} bind:selected={selectedMap["blueBan" + i]} />
 		{/each}
 	</div>
 	<div class="bans">
 		{#each Array(5) as _, i }
-			<ChampionFrame bind:championID={redBans[i]} on:message={handle} hideName={true} settable={true} />
+			<ChampionFrame bind:championID={redBans[i]} on:message={handle} hideName={true} settable={true} location={"redBan" + i} bind:selected={selectedMap["redBan" + i]} />
 		{/each}
 	</div>
 </div>
@@ -69,21 +79,21 @@
 	<div class="picks">
 		{#each Array(5) as _, i}
 			<div>
-				<h2 class="blue">B{i + 1}</h2>
-				<ChampionFrame bind:championID={bluePicks[i]} on:message={handle} hideName={true} settable={true} big={true} />
+				<h2 class="blue {selectedMap["bluePick" + i] ? "gold" : ""}">B{i + 1}</h2>
+				<ChampionFrame bind:championID={bluePicks[i]} on:message={handle} hideName={true} settable={true} big={true} location={"bluePick" + i} bind:selected={selectedMap["bluePick" + i]} />
 			</div>
 		{/each}
 	</div>
 	<div class="picker">
 		{#each championIDs as championID}
-			<ChampionFrame {championID} on:message={handle} bind:selected={selectedMap[championID]} bind:disabled={disabledMap[championID]} />
+			<ChampionFrame {championID} on:message={handle} bind:selected={selectedMap["frame" + championID]} bind:disabled={disabledMap["frame" + championID]} />
 		{/each}
 	</div>
 	<div class="picks">
 		{#each Array(5) as _, i}
 			<div>
-				<ChampionFrame bind:championID={redPicks[i]} on:message={handle} hideName={true} settable={true} big={true} />
-				<h2 class="red">R{i + 1}</h2>
+				<ChampionFrame bind:championID={redPicks[i]} on:message={handle} hideName={true} settable={true} big={true} location={"redPick" + i} bind:selected={selectedMap["redPick" + i]} />
+				<h2 class="red {selectedMap["redPick" + i] ? "gold" : ""}">R{i + 1}</h2>
 			</div>
 		{/each}
 	</div>
@@ -151,5 +161,9 @@
 
 	.red {
 		color: var(--clr-red);
+	}
+
+	.gold {
+		color: var(--clr-gold);
 	}
 </style>
