@@ -124,12 +124,12 @@
 <div class="bans-container">
 	<div class="bans">
 		{#each Array(5) as _, i }
-			<ChampionFrame bind:championID={blueBans[i]} on:message={handle} struck={true} settable={true} location={"blueBan" + i} bind:selected={selectedMap["blueBan" + i]} />
+			<ChampionFrame bind:championID={blueBans[i]} on:message={handle} struck={true} gap={i == 2} settable={true} location={"blueBan" + i} bind:selected={selectedMap["blueBan" + i]} />
 		{/each}
 	</div>
 	<div class="bans">
 		{#each Array(5) as _, i }
-			<ChampionFrame bind:championID={redBans[i]} on:message={handle} struck={true} settable={true} location={"redBan" + i} bind:selected={selectedMap["redBan" + i]} />
+			<ChampionFrame bind:championID={redBans[i]} on:message={handle} struck={true} gap={i == 1} settable={true} location={"redBan" + i} bind:selected={selectedMap["redBan" + i]} />
 		{/each}
 	</div>
 </div>
@@ -209,6 +209,10 @@
 	.picks > div > h2 {
 		width: auto;
 		height: auto;
+	}
+
+	.picks div:nth-child(3) {
+		margin-bottom: calc(2 * var(--section-gap));
 	}
 
 	.picker {

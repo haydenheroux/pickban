@@ -8,6 +8,7 @@
     export let struck: boolean = false;
     export let showName: boolean = false;
     export let settable: boolean = false;
+    export let gap: boolean = false;
 
     export let disabled: boolean = false;
     export let selected: boolean = false;
@@ -64,7 +65,7 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="champion-frame {big ? "big" : ""} {disabled ? "disabled" : ""}" on:contextmenu|preventDefault={openContextMenu} on:click|preventDefault={onClick}>
+<div class="champion-frame {big ? "big" : ""} {disabled ? "disabled" : ""} {gap ? "gap" : ""}" on:contextmenu|preventDefault={openContextMenu} on:click|preventDefault={onClick}>
     {#if imageURL.length > 0 }
         <div class="portrait {selected ? "gold" : ""} {disabled ? "disabled" : ""} {struck ? "struck" : ""}" style="background-image: url({imageURL});" />
     {:else}
@@ -101,6 +102,11 @@
 
     .champion-frame.big {
         width: 7rem;
+    }
+
+    .champion-frame.gap {
+        /* TODO Check if 1x or 2x looks better */
+        margin-right: calc(1 * var(--section-gap));
     }
 
     .portrait {
