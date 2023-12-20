@@ -18,7 +18,7 @@ export const json = await getChampions(latestVersion);
 
 const championsByID = json.data;
 
-export const championIDs = Object.keys(championsByID);
+export const allChampionIDs = Object.keys(championsByID);
 
 export function getChampionByID(championIDOrNull: string | null) {
     if (championIDOrNull == null) return null;

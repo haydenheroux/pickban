@@ -35,6 +35,8 @@ export function addFavorite(lane: Lane, championIDOrNull: string | null) {
     favoritesObject[lane] = [...laneFavorites];
 
     favorites.set(favoritesObject);
+
+    refreshFavorites.trigger();
 }
 
 export function removeFavorite(lane: Lane, championIDOrNull: string | null) {
@@ -51,6 +53,10 @@ export function removeFavorite(lane: Lane, championIDOrNull: string | null) {
     favoritesObject[lane] = [...laneFavorites];
 
     favorites.set(favoritesObject);
+
+    refreshFavorites.trigger();
 }
+
+export const refreshFavorites = trigger();
 
 export const hideContextMenus = trigger();

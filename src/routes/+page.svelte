@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ChampionFrame from "$lib/components/ChampionFrame.svelte";
-	import { championIDs } from "$lib/data/data_dragon";
-	import { Lane, isFavorite } from "$lib/data/stores";
+	import { allChampionIDs } from "$lib/data/data_dragon";
+	import { Lane, isFavorite, refreshFavorites } from "$lib/data/stores";
 
 	let previousEvent: any | null = null;
 	let selectedChampionID: string | null = null;
@@ -41,7 +41,7 @@
 	updateSelected();
 
 	function updateSelected() {
-		for (let championID of championIDs) {
+		for (let championID of allChampionIDs) {
 			selectedMap["frame" + championID] = championID == selectedChampionID && selectedLocation == null;
 		}
 		for (let i = 0; i < 5; i++) {
@@ -56,7 +56,7 @@
 	updateDisabled();
 
 	function updateDisabled() {
-		for (let championID of championIDs) {
+		for (let championID of allChampionIDs) {
 			// @ts-ignore
 			disabledMap["frame" + championID] = blueBans.includes(championID) || redBans.includes(championID) || bluePicks.includes(championID) || redPicks.includes(championID);
 		}
@@ -70,19 +70,35 @@
         {lane: Lane.Support, src: "support.png"},
     ];
 
-	let laneFilterOrNull: string | null = null;
+	let laneFilterOrNull: Lane | null = null;
 
 	function toggleLaneFilter(lane: Lane) {
 		if (laneFilterOrNull != lane) {
 			laneFilterOrNull = lane;
-			paletteChampionIDs = paletteChampionIDs.filter((championID) => isFavorite(lane, championID));
 		} else {
 			laneFilterOrNull = null;
-			paletteChampionIDs = championIDs;
 		}
 
+		updateChampionFilter();
 		updateLaneFilterMap();
 	}
+
+
+	let championIDs = allChampionIDs;
+	updateChampionFilter();
+
+	function updateChampionFilter() {
+		if (laneFilterOrNull == null) {
+			championIDs = allChampionIDs;
+		} else {
+			// @ts-ignore
+			championIDs = allChampionIDs.filter((championID) => isFavorite(laneFilterOrNull, championID));
+		}
+	}
+
+	refreshFavorites.onTrigger(() => {
+		updateChampionFilter();
+	});
 
 	let laneFilterMap: Record<string, boolean> = {};
 	updateLaneFilterMap();
@@ -92,8 +108,6 @@
 			laneFilterMap[lane.lane] = laneFilterOrNull == lane.lane;
 		}
 	} 
-
-	let paletteChampionIDs = championIDs;
 </script>
 
 <div class="bans-container">
@@ -128,7 +142,7 @@
 			{/each}
 		</div>
 		<div class="palette">
-			{#each paletteChampionIDs as championID}
+			{#each championIDs as championID}
 				<ChampionFrame {championID} on:message={handle} bind:selected={selectedMap["frame" + championID]} bind:disabled={disabledMap["frame" + championID]} />
 			{/each}
 		</div>
