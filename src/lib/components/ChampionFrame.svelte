@@ -6,11 +6,11 @@
 
     export let big: boolean = false;
     export let struck: boolean = false;
-    export let hideName: boolean = false;
+    export let showName: boolean = false;
     export let settable: boolean = false;
 
+    export let disabled: boolean = false;
     export let selected: boolean = false;
-    export let location: string | null = null;
 
     const dispatch = createEventDispatcher();
 
@@ -28,9 +28,8 @@
         });
     }
 
-    export let disabled: boolean = false;
-
     export let championID: string | null = null;
+    export let location: string;
 
     let name: string;
     let imageURL: string;
@@ -48,13 +47,13 @@
         showContextMenu = false;
     });
 
-    function openContextMenu(e: any) {
+    function openContextMenu(event: any) {
         hideContextMenus.trigger();
 
         showContextMenu = true;
 
-        menu.x = e.pageX;
-        menu.y = e.pageY;
+        menu.x = event.pageX;
+        menu.y = event.pageY;
     }
 
     function closeContextMenu() {
@@ -70,7 +69,7 @@
     {:else}
         <div class="portrait" style="border: 1px solid var(--clr-neutral-800);" />
     {/if}
-    {#if name.length > 0 && !hideName}
+    {#if name.length > 0 && showName}
         <p class="name {selected ? "gold": ""} {disabled ? "disabled" : ""}">
             {name}
         </p>

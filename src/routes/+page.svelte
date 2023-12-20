@@ -3,9 +3,9 @@
 	import { allChampionIDs } from "$lib/data/data_dragon";
 	import { Lane, isFavorite, refreshFavorites } from "$lib/data/stores";
 
-	let previousEvent: any | null = null;
-	let selectedChampionID: string | null = null;
-	let selectedLocation: string | null = null
+	let previousMessageOrNull: any | null = null;
+	let selectedChampionIDOrNull: string | null = null;
+	let selectedLocationOrNull: string | null = null;
 
 	let blueBans = new Array(5).fill(null);
 	let redBans = new Array(5).fill(null);
@@ -14,24 +14,26 @@
 	let redPicks = new Array(5).fill(null);
 
 	function handle(event: any) {
-		const championID = event.detail.championID;
-		const location = event.detail.location;
+		const message = event.detail;
 
-		if (selectedChampionID == null) {
-			selectedChampionID = championID;
-			selectedLocation = location;
+		const championID = message.championID;
+		const location = message.location;
+
+		if (selectedChampionIDOrNull == null) {
+			selectedChampionIDOrNull = championID;
+			selectedLocationOrNull = location;
 		} else {
-			if (previousEvent != null) {
-				previousEvent.setChampionID(championID);
+			if (previousMessageOrNull != null) {
+				previousMessageOrNull.setChampionID(championID);
 			}
 
-			event.detail.setChampionID(selectedChampionID);
+			message.setChampionID(selectedChampionIDOrNull);
 			
-			selectedChampionID = null;
-			selectedLocation = null;
+			selectedChampionIDOrNull = null;
+			selectedLocationOrNull = null;
 		}
 
-		previousEvent = event.detail;
+		previousMessageOrNull = message;
 
 		updateSelected();
 		updateDisabled();
@@ -42,13 +44,13 @@
 
 	function updateSelected() {
 		for (let championID of allChampionIDs) {
-			selectedMap["frame" + championID] = championID == selectedChampionID && selectedLocation == null;
+			selectedMap["frame" + championID] = championID == selectedChampionIDOrNull && selectedLocationOrNull == "frame";
 		}
 		for (let i = 0; i < 5; i++) {
-			selectedMap["blueBan" + i] = selectedLocation == "blueBan" + i;
-			selectedMap["redBan" + i] = selectedLocation == "redBan" + i;
-			selectedMap["bluePick" + i] = selectedLocation == "bluePick" + i;
-			selectedMap["redPick" + i] = selectedLocation == "redPick" + i;
+			selectedMap["blueBan" + i] = selectedLocationOrNull == "blueBan" + i;
+			selectedMap["redBan" + i] = selectedLocationOrNull == "redBan" + i;
+			selectedMap["bluePick" + i] = selectedLocationOrNull == "bluePick" + i;
+			selectedMap["redPick" + i] = selectedLocationOrNull == "redPick" + i;
 		}
 	}
 
@@ -113,12 +115,12 @@
 <div class="bans-container">
 	<div class="bans">
 		{#each Array(5) as _, i }
-			<ChampionFrame bind:championID={blueBans[i]} on:message={handle} struck={true} hideName={true} settable={true} location={"blueBan" + i} bind:selected={selectedMap["blueBan" + i]} />
+			<ChampionFrame bind:championID={blueBans[i]} on:message={handle} struck={true} settable={true} location={"blueBan" + i} bind:selected={selectedMap["blueBan" + i]} />
 		{/each}
 	</div>
 	<div class="bans">
 		{#each Array(5) as _, i }
-			<ChampionFrame bind:championID={redBans[i]} on:message={handle} struck={true} hideName={true} settable={true} location={"redBan" + i} bind:selected={selectedMap["redBan" + i]} />
+			<ChampionFrame bind:championID={redBans[i]} on:message={handle} struck={true} settable={true} location={"redBan" + i} bind:selected={selectedMap["redBan" + i]} />
 		{/each}
 	</div>
 </div>
@@ -128,7 +130,7 @@
 		{#each Array(5) as _, i}
 			<div>
 				<h2 class="blue {selectedMap["bluePick" + i] ? "gold" : ""}">B{i + 1}</h2>
-				<ChampionFrame bind:championID={bluePicks[i]} on:message={handle} hideName={true} settable={true} big={true} location={"bluePick" + i} bind:selected={selectedMap["bluePick" + i]} />
+				<ChampionFrame bind:championID={bluePicks[i]} on:message={handle} settable={true} big={true} location={"bluePick" + i} bind:selected={selectedMap["bluePick" + i]} />
 			</div>
 		{/each}
 	</div>
@@ -143,14 +145,14 @@
 		</div>
 		<div class="palette">
 			{#each championIDs as championID}
-				<ChampionFrame {championID} on:message={handle} bind:selected={selectedMap["frame" + championID]} bind:disabled={disabledMap["frame" + championID]} />
+				<ChampionFrame {championID} on:message={handle} showName={true} location={"frame"} bind:selected={selectedMap["frame" + championID]} bind:disabled={disabledMap["frame" + championID]} />
 			{/each}
 		</div>
 	</div>
 	<div class="picks">
 		{#each Array(5) as _, i}
 			<div>
-				<ChampionFrame bind:championID={redPicks[i]} on:message={handle} hideName={true} settable={true} big={true} location={"redPick" + i} bind:selected={selectedMap["redPick" + i]} />
+				<ChampionFrame bind:championID={redPicks[i]} on:message={handle} settable={true} big={true} location={"redPick" + i} bind:selected={selectedMap["redPick" + i]} />
 				<h2 class="red {selectedMap["redPick" + i] ? "gold" : ""}">R{i + 1}</h2>
 			</div>
 		{/each}
@@ -228,7 +230,7 @@
 		display: grid;
 		justify-items: center;
 		/* TODO Determine if 6 or 7 columns looks best */
-		grid-template-columns: repeat(6, minmax(min-content, 1fr));
+		grid-template-columns: repeat(7, minmax(min-content, 1fr));
 		grid-auto-rows: min-content;
 		gap: var(--section-gap);
 
