@@ -140,6 +140,7 @@
         height: 2px;
         width: calc(sqrt(2) * var(--span));
         background-color: var(--clr-foreground);
+        border-radius: 1px;
         position: absolute;
         left: calc(var(--inset) + 0.5px);
         top: calc(var(--inset) - 0.5px);
