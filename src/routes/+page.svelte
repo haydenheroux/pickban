@@ -2,35 +2,35 @@
 	import ChampionFrame from "$lib/components/ChampionFrame.svelte";
 	import { championIDs } from "$lib/data/data_dragon";
 
-	let previous: any | null = null;
-	let selected: string | null = null;
+	let previousEvent: any | null = null;
+	let selectedChampionID: string | null = null;
 	let selectedLocation: string | null = null
 
-	let blueBans = [null, null, null, null, null];
-	let redBans = [null, null, null, null, null];
+	let blueBans = new Array(5).fill(null);
+	let redBans = new Array(5).fill(null);
 
-	let bluePicks = [null, null, null, null, null];  
-	let redPicks = [null, null, null, null, null];
+	let bluePicks = new Array(5).fill(null);
+	let redPicks = new Array(5).fill(null);
 
 	function handle(event: any) {
 		const championID = event.detail.championID;
 		const location = event.detail.location;
 
-		if (selected == null) {
-			selected = championID;
+		if (selectedChampionID == null) {
+			selectedChampionID = championID;
 			selectedLocation = location;
 		} else {
-			if (previous != null) {
-				previous.setChampionID(championID);
+			if (previousEvent != null) {
+				previousEvent.setChampionID(championID);
 			}
 
-			event.detail.setChampionID(selected);
+			event.detail.setChampionID(selectedChampionID);
 			
-			selected = null;
+			selectedChampionID = null;
 			selectedLocation = null;
 		}
 
-		previous = event.detail;
+		previousEvent = event.detail;
 
 		updateSelected();
 		updateDisabled();
@@ -41,7 +41,7 @@
 
 	function updateSelected() {
 		for (let championID of championIDs) {
-			selectedMap["frame" + championID] = championID == selected && selectedLocation == null;
+			selectedMap["frame" + championID] = championID == selectedChampionID && selectedLocation == null;
 		}
 		for (let i = 0; i < 5; i++) {
 			selectedMap["blueBan" + i] = selectedLocation == "blueBan" + i;
