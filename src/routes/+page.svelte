@@ -44,13 +44,13 @@
 
 	function updateSelected() {
 		for (let championID of allChampionIDs) {
-			selectedMap["frame" + championID] = championID == selectedChampionIDOrNull && selectedLocationOrNull == "frame";
+			selectedMap["frame" + championID] = selectedLocationOrNull == "frame" && selectedChampionIDOrNull == championID;
 		}
 		for (let i = 0; i < 5; i++) {
-			selectedMap["blueBan" + i] = selectedLocationOrNull == "blueBan" + i;
-			selectedMap["redBan" + i] = selectedLocationOrNull == "redBan" + i;
-			selectedMap["bluePick" + i] = selectedLocationOrNull == "bluePick" + i;
-			selectedMap["redPick" + i] = selectedLocationOrNull == "redPick" + i;
+			selectedMap["blueBan" + i] = selectedLocationOrNull == "blueBan" + i && selectedChampionIDOrNull != null;
+			selectedMap["redBan" + i] = selectedLocationOrNull == "redBan" + i && selectedChampionIDOrNull != null;
+			selectedMap["bluePick" + i] = selectedLocationOrNull == "bluePick" + i && selectedChampionIDOrNull != null;
+			selectedMap["redPick" + i] = selectedLocationOrNull == "redPick" + i && selectedChampionIDOrNull != null;
 		}
 	}
 
