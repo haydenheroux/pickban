@@ -26,10 +26,12 @@
         minionsSlainPerMinute = calculateCreepScorePerMinute(creepScore, totalMinutes);
         campsSlainPerMinute = calculateCreepScorePerMinute(creepScore / 4, totalMinutes);
 
-        minionEfficiency = coerce(creepScore / calculateTotalMinionSpawns(totalMinutes));
+        let minions = Minions.until(totalMinutes);
+
+        minionEfficiency = coerce(creepScore / minions.getCreepScore());
         campEfficiency = 0;
 
-        minionGoldEarned = minionEfficiency * calculateTotalMinionGoldEarned(totalMinutes);
+        minionGoldEarned = minionEfficiency * minions.getGoldIncome();
         campGoldEarned = 0;
     }
 
@@ -37,9 +39,9 @@
         return Number.isFinite(n) ? n : 0;
     }
 
-    const initialWaveSpawnDelayMinutes = 1 + (5 / 60);
-    const minutesPerWave = (30 / 60);
-    const wavesPerMinute = 1 / minutesPerWave;
+    const initialWaveSpawnDelayMinutes: number = 1 + (5 / 60);
+    const minutesPerWave: number = (30 / 60);
+    const wavesPerMinute: number = 1 / minutesPerWave;
 
     function calculateCreepScorePerMinute(creepsSlain: number, minutes: number) {
         const result = creepsSlain / minutes; 
@@ -47,51 +49,52 @@
         return coerce(result);
     }
 
-    function calculateTotalWaveSpawns(minutes: number) {
-        // The "+ 1" includes the initial wave that spawns at initialWaveSpawnDelayMinutes
-        return Math.floor(1 + (minutes - initialWaveSpawnDelayMinutes) * wavesPerMinute);
-    }
+    class Minions {
+        melees!: number;
+        ranged!: number;
+        stage1Cannons!: number;
+        stage2Cannons!: number;
+        stage3Cannons!: number;
 
-    function calculateTotalMeleeSpawns(waves: number) {
-        return waves * 3;
-    }
+        static until(minutes: number) {
+            const minions: Minions = new Minions(); 
 
-    function calculateTotalRangedSpawns(waves: number) {
-        return waves * 3;
-    }
+            // The "+ 1" includes the initial wave that spawns at initialWaveSpawnDelayMinutes
+            const waves = Math.floor(1 + (minutes - initialWaveSpawnDelayMinutes) * wavesPerMinute);
 
-    function calculateTotalCannonSpawns(waves: number) {
-        let cannons = 0;
+            minions.melees = waves * 3;
+            minions.ranged = waves * 3;
 
-        for (let wave = 1; wave <= waves; wave++) {
-            let minute = initialWaveSpawnDelayMinutes + (wave - 1) * minutesPerWave;
+            for (let wave = 1; wave <= waves; wave++) {
+                let minute = initialWaveSpawnDelayMinutes + (wave - 1) * minutesPerWave;
 
-            if (minute <= 15 && wave % 3 == 0) {
-                cannons++;
-            } else if (minute > 15 && minute <= 25 && wave % 2 == 0) {
-                cannons++;
-            } else if (minutes > 25) {
-                cannons++;
+                if (minute <= 15 && wave % 3 == 0) {
+                    minions.stage1Cannons++;
+                } else if (minute > 15 && minute <= 25 && wave % 2 == 0) {
+                    minions.stage2Cannons++;
+                } else if (minutes > 25) {
+                    minions.stage3Cannons++;
+                }
             }
+
+            return minions;
         }
 
-        return cannons;
-    }
+        constructor() {
+            this.melees = 0;
+            this.ranged = 0;
+            this.stage1Cannons = 0;
+            this.stage2Cannons = 0;
+            this.stage3Cannons = 0;
+        }
 
-    function calculateTotalMinionSpawns(minutes: number) {
-        const waves = calculateTotalWaveSpawns(minutes);
+        getCreepScore(): number {
+            return this.melees + this.ranged + this.stage1Cannons + this.stage2Cannons + this.stage3Cannons;
+        }
 
-        return calculateTotalMeleeSpawns(waves) + calculateTotalRangedSpawns(waves) + calculateTotalCannonSpawns(waves);
-    }
-
-    const goldPerMelee = 21;
-    const goldPerRanged = 14;
-    const goldPerCannon = 60;
-
-    function calculateTotalMinionGoldEarned(minutes: number) {
-        const waves = calculateTotalWaveSpawns(minutes);
-
-        return goldPerMelee * calculateTotalMeleeSpawns(waves) + goldPerRanged * calculateTotalRangedSpawns(waves) + goldPerCannon * calculateTotalCannonSpawns(waves);
+        getGoldIncome(): number {
+            return this.melees * 21 + this.ranged * 14 + this.stage1Cannons * 60 + this.stage2Cannons * 84 + this.stage3Cannons * 90;
+        }
     }
 </script>
 
