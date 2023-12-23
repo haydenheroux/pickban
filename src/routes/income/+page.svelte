@@ -50,11 +50,20 @@
         private static minutesPerWave: number = (30 / 60);
         private static wavesPerMinute: number = 1 / this.minutesPerWave;
 
-        melees!: number;
-        ranged!: number;
-        stage1Cannons!: number;
-        stage2Cannons!: number;
-        stage3Cannons!: number;
+        private melees!: number;
+        private static goldPerMelee: number = 21;
+
+        private ranged!: number;
+        private static goldPerRanged: number = 14;
+
+        private stage1Cannons!: number;
+        private static goldPerStage1Cannon: number = 60;
+        
+        private stage2Cannons!: number;
+        private static goldPerStage2Cannon: number = 84;
+
+        private stage3Cannons!: number;
+        private static goldPerStage3Cannon: number = 90;
 
         private static wavesUntil(minutes: number) {
             // The "+ 1" includes the initial wave that spawns at initialWaveSpawnDelayMinutes
@@ -101,7 +110,11 @@
         }
 
         public getGoldIncome(): number {
-            return this.melees * 21 + this.ranged * 14 + this.stage1Cannons * 60 + this.stage2Cannons * 84 + this.stage3Cannons * 90;
+            return this.melees * Minions.goldPerMelee 
+                + this.ranged * Minions.goldPerRanged
+                + this.stage1Cannons * Minions.goldPerStage1Cannon 
+                + this.stage2Cannons * Minions.goldPerStage2Cannon 
+                + this.stage3Cannons * Minions.goldPerStage3Cannon;
         }
     }
 </script>
