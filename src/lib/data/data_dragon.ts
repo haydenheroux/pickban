@@ -28,14 +28,14 @@ export function getChampionByID(championIDOrNull: string | null) {
     return championsByID[championID];
 }
 
-export function getChampionNameByID(championIDOrNull: string | null): string {
+export function getChampionNameOrNull(championIDOrNull: string | null): string {
     if (championIDOrNull == null) return "";
 
     return getChampionByID(championIDOrNull).name;
 }
 
-export function getImageURL(championIDOrNull: string | null): string {
-    if (championIDOrNull == null) return "";
+export function getImageURLOrNull(championIDOrNull: string | null): string | null {
+    if (championIDOrNull == null) return null;
 
     const championID = championIDOrNull;
 

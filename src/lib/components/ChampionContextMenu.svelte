@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getChampionNameByID } from "$lib/data/data_dragon";
+	import { getChampionNameOrNull } from "$lib/data/data_dragon";
 	import { Lane, addFavorite, isFavorite, removeFavorite } from "$lib/data/stores";
     export let championID: string | null = null;
 
@@ -8,9 +8,7 @@
 
     let name: string;
 
-    $: {
-        name = getChampionNameByID(championID);
-    }
+    $: name = getChampionNameOrNull(championID);
 
     const lanes = [
         {lane: Lane.Top, src: "top.png"},
@@ -23,7 +21,7 @@
 
 <nav class="context-menu" style="position: absolute; left: {x}px; top: {y}px;" on:contextmenu|preventDefault={() => {}}>
     <ul>
-        <li><p>{name}</p></li>
+        <li><p>{name ? name : ""}</p></li>
         <li><hr></li>
         {#each lanes as {lane, src}}
             {#if isFavorite(lane, championID)}
