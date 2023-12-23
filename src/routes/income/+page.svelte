@@ -39,10 +39,6 @@
         return Number.isFinite(n) ? n : 0;
     }
 
-    const initialWaveSpawnDelayMinutes: number = 1 + (5 / 60);
-    const minutesPerWave: number = (30 / 60);
-    const wavesPerMinute: number = 1 / minutesPerWave;
-
     function calculateCreepScorePerMinute(creepsSlain: number, minutes: number) {
         const result = creepsSlain / minutes; 
 
@@ -50,23 +46,35 @@
     }
 
     class Minions {
+        private static initialWaveSpawnDelayMinutes: number = 1 + (5 / 60);
+        private static minutesPerWave: number = (30 / 60);
+        private static wavesPerMinute: number = 1 / this.minutesPerWave;
+
         melees!: number;
         ranged!: number;
         stage1Cannons!: number;
         stage2Cannons!: number;
         stage3Cannons!: number;
 
-        static until(minutes: number) {
+        private static wavesUntil(minutes: number) {
+            // The "+ 1" includes the initial wave that spawns at initialWaveSpawnDelayMinutes
+            return Math.floor(1 + (minutes - this.initialWaveSpawnDelayMinutes) * this.wavesPerMinute);
+        }
+
+        private static minutesAt(wave: number) {
+            return this.initialWaveSpawnDelayMinutes + (wave - 1) * this.minutesPerWave;
+        }
+
+        public static until(minutes: number) {
             const minions: Minions = new Minions(); 
 
-            // The "+ 1" includes the initial wave that spawns at initialWaveSpawnDelayMinutes
-            const waves = Math.floor(1 + (minutes - initialWaveSpawnDelayMinutes) * wavesPerMinute);
+            const waves = this.wavesUntil(minutes);
 
             minions.melees = waves * 3;
             minions.ranged = waves * 3;
 
             for (let wave = 1; wave <= waves; wave++) {
-                let minute = initialWaveSpawnDelayMinutes + (wave - 1) * minutesPerWave;
+                let minute = this.minutesAt(wave);
 
                 if (minute <= 15 && wave % 3 == 0) {
                     minions.stage1Cannons++;
@@ -80,7 +88,7 @@
             return minions;
         }
 
-        constructor() {
+        private constructor() {
             this.melees = 0;
             this.ranged = 0;
             this.stage1Cannons = 0;
@@ -88,11 +96,11 @@
             this.stage3Cannons = 0;
         }
 
-        getCreepScore(): number {
+        public getCreepScore(): number {
             return this.melees + this.ranged + this.stage1Cannons + this.stage2Cannons + this.stage3Cannons;
         }
 
-        getGoldIncome(): number {
+        public getGoldIncome(): number {
             return this.melees * 21 + this.ranged * 14 + this.stage1Cannons * 60 + this.stage2Cannons * 84 + this.stage3Cannons * 90;
         }
     }
