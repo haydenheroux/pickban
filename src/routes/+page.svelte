@@ -119,6 +119,19 @@
 			laneFilterMap[lane.lane] = laneFilterOrNull == lane.lane;
 		}
 	} 
+
+	function clearPickBan(_event: any) {
+		blueBans = new Array(5).fill(null);
+		redBans = new Array(5).fill(null);
+
+		bluePicks = new Array(5).fill(null);
+		redPicks = new Array(5).fill(null);
+
+		updateSelected();
+		updateDisabled();
+		
+		// TODO Clear selectedOrNull?
+	}
 </script>
 
 <div class="bans-container">
@@ -144,13 +157,21 @@
 		{/each}
 	</div>
 	<div class="picker">
-		<div class="filter">
-			{#each lanes as {lane, src}}
-				<!-- svelte-ignore a11y-missing-attribute -->
+		<div class="bar">
+			<div class="filter">
+				{#each lanes as {lane, src}}
+					<!-- svelte-ignore a11y-missing-attribute -->
+					<!-- svelte-ignore a11y-click-events-have-key-events -->
+					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+					<img {src} class="{laneFilterMap[lane] ? "selected" : ""}" on:click={() => toggleLaneFilter(lane)}>
+				{/each}
+			</div>
+			<div class="options">
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
 				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-				<img {src} class="{laneFilterMap[lane] ? "selected" : ""}" on:click={() => toggleLaneFilter(lane)}>
-			{/each}
+				<!-- svelte-ignore a11y-missing-attribute -->
+				<img src={"close.png"} on:click={clearPickBan}>
+			</div>
 		</div>
 		<div class="palette">
 			{#each championIDs as championID}
@@ -223,20 +244,25 @@
 		height: 40rem;
 	}
 
-	.picker .filter {
+	.picker .bar {
 		display: flex;
 		flex-direction: row;
-		justify-content: flex-end;
-		gap: 0.25rem;
+		justify-content: space-between;
 	}
 
-	.picker .filter img {
+	.picker .bar img {
 		height: 2rem;
 		filter: grayscale();
 	}
 
-	.picker .filter img.selected {
+	.picker .bar img.selected, .picker .bar img:hover {
 		filter: grayscale() brightness(200%);
+	}
+
+	.picker .bar .filter {
+		display: flex;
+		flex-direction: row;
+		gap: 0.25rem;
 	}
 
 	.palette {

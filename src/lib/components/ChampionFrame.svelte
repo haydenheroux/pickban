@@ -66,7 +66,7 @@
 <div class="{big ? "big" : ""} {disabled ? "disabled" : ""} {gap ? "gap" : ""}" on:contextmenu|preventDefault={openContextMenu} on:click|preventDefault={onClick}>
     <ChampionPortrait {championID} {selected} {disabled} {struck}/>
     {#if showName}
-        <ChampionName {championID}/>
+        <ChampionName {championID} {selected} {disabled} />
     {/if}
 </div>
 
