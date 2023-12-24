@@ -7,6 +7,7 @@
 	<div class="container">
 		<nav>
 			<a href="{base}/"><em>drafting</em></a>
+			<HeaderLink href="{base}/map">map</HeaderLink>
 			<HeaderLink href="{base}/income">income</HeaderLink>
 		</nav>
 	</div>
