@@ -253,6 +253,8 @@
 	.picker .bar img {
 		height: 2rem;
 		filter: grayscale();
+
+		cursor: pointer;
 	}
 
 	.picker .bar img.selected, .picker .bar img:hover {
