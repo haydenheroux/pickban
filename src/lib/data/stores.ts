@@ -60,3 +60,10 @@ export function removeFavorite(lane: Lane, championIDOrNull: string | null) {
 export const refreshFavorites = trigger();
 
 export const hideContextMenus = trigger();
+
+export interface Picks {
+    red: Array<string | null>;
+    blue: Array<string | null>;
+}
+
+export const picks = storable<Picks>("picks", {red: [], blue: []} as Picks);
