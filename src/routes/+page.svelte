@@ -1,5 +1,6 @@
 <script lang="ts">
 	import ChampionFrame from "$lib/components/ChampionFrame.svelte";
+	import { lanes } from "$lib/data/assets";
 	import { allChampionIDs } from "$lib/data/data_dragon";
 	import { Lane, isFavorite, picks as picksStore, refreshFavorites } from "$lib/data/stores";
 
@@ -73,14 +74,6 @@
 			disabledMap["frame" + championID] = blueBans.includes(championID) || redBans.includes(championID) || picks.blue.includes(championID) || picks.red.includes(championID);
 		}
 	}
-
-    const lanes = [
-        {lane: Lane.Top, src: "top.png"},
-        {lane: Lane.Jungle, src: "jungle.png"},
-        {lane: Lane.Middle, src: "middle.png"},
-        {lane: Lane.Bottom, src: "bottom.png"},
-        {lane: Lane.Support, src: "support.png"},
-    ];
 
 	let laneFilterOrNull: Lane | null = null;
 
