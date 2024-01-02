@@ -41,3 +41,15 @@ export function getImageURLOrNull(championIDOrNull: string | null): string | nul
 
     return `https://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/champion/${championID}.png`;
 }
+
+export function getImageOrNull(championIDOrNull: string | null): HTMLImageElement | null {
+    if (!championIDOrNull) return null;
+
+    let imageOrNull = new Image();
+
+    if (!imageOrNull) return null;
+
+    imageOrNull.src = getImageURLOrNull(championIDOrNull)!!;
+
+    return imageOrNull;
+}
