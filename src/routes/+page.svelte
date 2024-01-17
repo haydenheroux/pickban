@@ -1,7 +1,8 @@
 <script lang="ts">
 	import ChampionFrame from "$lib/components/ChampionFrame.svelte";
+	import { lanes } from "$lib/data/assets";
 	import { allChampionIDs } from "$lib/data/data_dragon";
-	import { Color, Lane, isColored, isLane, refreshColors, refreshLanes } from "$lib/data/stores";
+	import { Color, Lane, isColored, isLane, refreshColors, refreshLanes, picks as picksStore } from "$lib/data/stores";
 
 	let previousMessageOrNull: any | null = null;
 	let selectedChampionIDOrNull: string | null = null;
@@ -10,8 +11,7 @@
 	let blueBans = new Array(5).fill(null);
 	let redBans = new Array(5).fill(null);
 
-	let bluePicks = new Array(5).fill(null);
-	let redPicks = new Array(5).fill(null);
+	let picks = picksStore.get();
 
 	function handle(event: any) {
 		const message = event.detail;
@@ -44,6 +44,8 @@
 
 		previousMessageOrNull = message;
 
+		picksStore.set(picks);
+
 		updateSelected();
 		updateDisabled();
 	}
@@ -69,17 +71,9 @@
 	function updateDisabled() {
 		for (let championID of allChampionIDs) {
 			// @ts-ignore
-			disabledMap["frame" + championID] = blueBans.includes(championID) || redBans.includes(championID) || bluePicks.includes(championID) || redPicks.includes(championID);
+			disabledMap["frame" + championID] = blueBans.includes(championID) || redBans.includes(championID) || picks.blue.includes(championID) || picks.red.includes(championID);
 		}
 	}
-
-    const lanes = [
-        {lane: Lane.Top, src: "top.png"},
-        {lane: Lane.Jungle, src: "jungle.png"},
-        {lane: Lane.Middle, src: "middle.png"},
-        {lane: Lane.Bottom, src: "bottom.png"},
-        {lane: Lane.Support, src: "support.png"},
-    ];
 
 	let laneFilterOrNull: Lane | null = null;
 
@@ -163,8 +157,9 @@
 		blueBans = new Array(5).fill(null);
 		redBans = new Array(5).fill(null);
 
-		bluePicks = new Array(5).fill(null);
-		redPicks = new Array(5).fill(null);
+		picks.blue = new Array(5).fill(null);
+		picks.red = new Array(5).fill(null);
+		picksStore.set(picks);
 
 		updateSelected();
 		updateDisabled();
@@ -191,7 +186,7 @@
 		{#each Array(5) as _, i}
 			<div>
 				<h2 class="blue {selectedMap["bluePick" + i] ? "gold" : ""}">B{i + 1}</h2>
-				<ChampionFrame bind:championID={bluePicks[i]} on:message={handle} settable={true} big={true} location={"bluePick" + i} bind:selected={selectedMap["bluePick" + i]} />
+				<ChampionFrame bind:championID={picks.blue[i]} on:message={handle} settable={true} big={true} location={"bluePick" + i} bind:selected={selectedMap["bluePick" + i]} />
 			</div>
 		{/each}
 	</div>
@@ -227,7 +222,7 @@
 	<div class="picks">
 		{#each Array(5) as _, i}
 			<div>
-				<ChampionFrame bind:championID={redPicks[i]} on:message={handle} settable={true} big={true} location={"redPick" + i} bind:selected={selectedMap["redPick" + i]} />
+				<ChampionFrame bind:championID={picks.red[i]} on:message={handle} settable={true} big={true} location={"redPick" + i} bind:selected={selectedMap["redPick" + i]} />
 				<h2 class="red {selectedMap["redPick" + i] ? "gold" : ""}">R{i + 1}</h2>
 			</div>
 		{/each}

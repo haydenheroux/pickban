@@ -118,3 +118,10 @@ export function removeColor(color: Color, championIDOrNull: string | null) {
 export const refreshColors = trigger();
 
 export const hideContextMenus = trigger();
+
+export interface Picks {
+    red: Array<string | null>;
+    blue: Array<string | null>;
+}
+
+export const picks = storable<Picks>("picks", {red: [], blue: []} as Picks);
