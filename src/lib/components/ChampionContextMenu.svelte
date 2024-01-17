@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getChampionNameOrNull } from "$lib/data/data_dragon";
-	import { Lane, addFavorite, isFavorite, removeFavorite } from "$lib/data/stores";
+	import { Color, Lane, addColor, addLane, isColored, isLane, removeColor, removeLane } from "$lib/data/stores";
     export let championID: string | null = null;
 
     export let x: number;
@@ -9,6 +9,14 @@
     let name: string;
 
     $: name = getChampionNameOrNull(championID);
+
+    const colors = [
+        {color: Color.Red, src: "red.svg"},
+        {color: Color.Green, src: "green.svg"},
+        {color: Color.Blue, src: "blue.svg"},
+        {color: Color.White, src: "white.svg"},
+        {color: Color.Black, src: "black.svg"},
+    ];
 
     const lanes = [
         {lane: Lane.Top, src: "top.png"},
@@ -22,26 +30,48 @@
 <nav class="context-menu" style="position: absolute; left: {x}px; top: {y}px;" on:contextmenu|preventDefault={() => {}}>
     <ul>
         <li><p>{name ? name : ""}</p></li>
-        <li><hr></li>
         {#each lanes as {lane, src}}
-            {#if isFavorite(lane, championID)}
+            {#if isLane(lane, championID)}
                 <li>
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <!-- svelte-ignore a11y-no-static-element-interactions -->
-                    <div on:click={() => removeFavorite(lane, championID)}>
+                    <div on:click={() => removeLane(lane, championID)}>
                         <!-- svelte-ignore a11y-missing-attribute -->
                         <img {src}>
-                        <button>Unfavorite for {lane}</button>
+                        <button>Remove {lane}</button>
                     </div>
                 </li>
             {:else}
                 <li>
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <!-- svelte-ignore a11y-no-static-element-interactions -->
-                    <div on:click={() => addFavorite(lane, championID)}>
+                    <div on:click={() => addLane(lane, championID)}>
                         <!-- svelte-ignore a11y-missing-attribute -->
                         <img {src}>
-                        <button>Favorite for {lane}</button>
+                        <button>Add {lane}</button>
+                    </div>
+                </li>
+            {/if}
+        {/each}
+        {#each colors as {color, src}}
+            {#if isColored(color, championID)}
+                <li>
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <!-- svelte-ignore a11y-no-static-element-interactions -->
+                    <div on:click={() => removeColor(color, championID)}>
+                        <!-- svelte-ignore a11y-missing-attribute -->
+                        <img class="color" {src}>
+                        <button>Remove {color}</button>
+                    </div>
+                </li>
+            {:else}
+                <li>
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <!-- svelte-ignore a11y-no-static-element-interactions -->
+                    <div on:click={() => addColor(color, championID)}>
+                        <!-- svelte-ignore a11y-missing-attribute -->
+                        <img class="color" {src}>
+                        <button>Add {color}</button>
                     </div>
                 </li>
             {/if}
@@ -80,12 +110,16 @@
         align-items: center;
     }
 
-    .context-menu ul li div img {
+    img {
         height: 1rem;
         filter: grayscale();
     }
 
-    .context-menu ul li div button {
+    img.color {
+        filter: none;
+    }
+
+    button {
         font-size: 1rem;
         width: 100%;
         text-align: left;

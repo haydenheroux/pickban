@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ChampionFrame from "$lib/components/ChampionFrame.svelte";
 	import { allChampionIDs } from "$lib/data/data_dragon";
-	import { Lane, isFavorite, refreshFavorites } from "$lib/data/stores";
+	import { Color, Lane, isColored, isLane, refreshColors, refreshLanes } from "$lib/data/stores";
 
 	let previousMessageOrNull: any | null = null;
 	let selectedChampionIDOrNull: string | null = null;
@@ -94,20 +94,50 @@
 		updateLaneFilterMap();
 	}
 
+    const colors = [
+        {color: Color.Red, src: "red.svg"},
+        {color: Color.Green, src: "green.svg"},
+        {color: Color.Blue, src: "blue.svg"},
+        {color: Color.White, src: "white.svg"},
+        {color: Color.Black, src: "black.svg"},
+    ];
+
+	let colorFilterOrNull: Color | null = null;
+
+	function toggleColorFilter(color: Color) {
+		if (colorFilterOrNull != color) {
+			colorFilterOrNull = color;
+		} else {
+			colorFilterOrNull = null;
+		}
+
+		updateChampionFilter();
+		updateColorFilterMap();
+	}
 
 	let championIDs = allChampionIDs;
 	updateChampionFilter();
 
 	function updateChampionFilter() {
-		if (laneFilterOrNull == null) {
+		if (laneFilterOrNull == null && colorFilterOrNull == null) {
 			championIDs = allChampionIDs;
-		} else {
+		} else if (laneFilterOrNull != null && colorFilterOrNull != null){
 			// @ts-ignore
-			championIDs = allChampionIDs.filter((championID) => isFavorite(laneFilterOrNull, championID));
+			championIDs = allChampionIDs.filter((championID) => isLane(laneFilterOrNull, championID) && isColored(colorFilterOrNull, championID));
+		} else if (laneFilterOrNull != null && colorFilterOrNull == null) {
+			// @ts-ignore
+			championIDs = allChampionIDs.filter((championID) => isLane(laneFilterOrNull, championID));
+		} else if (laneFilterOrNull == null && colorFilterOrNull != null) {
+			// @ts-ignore
+			championIDs = allChampionIDs.filter((championID) => isColored(colorFilterOrNull, championID));
 		}
 	}
 
-	refreshFavorites.onTrigger(() => {
+	refreshLanes.onTrigger(() => {
+		updateChampionFilter();
+	});
+
+	refreshColors.onTrigger(() => {
 		updateChampionFilter();
 	});
 
@@ -117,6 +147,15 @@
 	function updateLaneFilterMap() {
 		for (let lane of lanes) {
 			laneFilterMap[lane.lane] = laneFilterOrNull == lane.lane;
+		}
+	} 
+
+	let colorFilterMap: Record<string, boolean> = {};
+	updateColorFilterMap();
+
+	function updateColorFilterMap() {
+		for (let color of colors) {
+			colorFilterMap[color.color] = colorFilterOrNull == color.color;
 		}
 	} 
 
@@ -164,6 +203,12 @@
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 					<img {src} class="{laneFilterMap[lane] ? "selected" : ""}" on:click={() => toggleLaneFilter(lane)}>
+				{/each}
+				{#each colors as {color, src}}
+					<!-- svelte-ignore a11y-missing-attribute -->
+					<!-- svelte-ignore a11y-click-events-have-key-events -->
+					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+					<img {src} class="color {colorFilterMap[color] ? "selected" : ""}" on:click={() => toggleColorFilter(color)}>
 				{/each}
 			</div>
 			<div class="options">
@@ -256,6 +301,10 @@
 
 		cursor: pointer;
 	}
+
+	.picker .bar img.color {
+		filter: none;
+	} 
 
 	.picker .bar img.selected, .picker .bar img:hover {
 		filter: grayscale() brightness(200%);
