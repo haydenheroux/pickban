@@ -11,12 +11,12 @@ export enum Lane {
 
 export const lanes = storable<Record<Lane, Array<string>>>("lanes", {} as Record<Lane, Array<string>>);
 
-export function isLane(lane: Lane, championIDOrNull: string | null): boolean {
-    if (championIDOrNull == null) return false;
+export function isLane(laneOrNull: Lane | null, championIDOrNull: string | null): boolean {
+    if (laneOrNull == null || championIDOrNull == null) return false;
 
     const favoritesObject = lanes.get();
 
-    const laneFavorites = new Set(favoritesObject[lane]);
+    const laneFavorites = new Set(favoritesObject[laneOrNull]);
 
     return laneFavorites.has(championIDOrNull);
 }
@@ -69,12 +69,12 @@ export enum Color {
 
 export const colors = storable<Record<Color, Array<string>>>("colors", {} as Record<Color, Array<string>>)
 
-export function isColored(color: Color, championIDOrNull: string | null): boolean {
-    if (championIDOrNull == null) return false;
+export function isColor(colorOrNull: Color | null, championIDOrNull: string | null): boolean {
+    if (colorOrNull == null || championIDOrNull == null) return false;
 
     const colorsObject = colors.get();
 
-    const colorColors = new Set(colorsObject[color]);
+    const colorColors = new Set(colorsObject[colorOrNull]);
 
     return colorColors.has(championIDOrNull);
 }

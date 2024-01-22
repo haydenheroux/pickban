@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getChampionNameOrNull } from "$lib/data/data_dragon";
-	import { Color, Lane, addColor, addLane, isColored, isLane, removeColor, removeLane } from "$lib/data/stores";
+	import { Color, Lane, addColor, addLane, isColor, isLane, removeColor, removeLane } from "$lib/data/stores";
     export let championID: string | null = null;
 
     export let x: number;
@@ -54,7 +54,7 @@
             {/if}
         {/each}
         {#each colors as {color, src}}
-            {#if isColored(color, championID)}
+            {#if isColor(color, championID)}
                 <li>
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <!-- svelte-ignore a11y-no-static-element-interactions -->

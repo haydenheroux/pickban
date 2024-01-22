@@ -2,7 +2,7 @@
 	import ChampionFrame from "$lib/components/ChampionFrame.svelte";
 	import { lanes } from "$lib/data/assets";
 	import { allChampionIDs } from "$lib/data/data_dragon";
-	import { Color, Lane, isColored, isLane, refreshColors, refreshLanes, picks as picksStore } from "$lib/data/stores";
+	import { Color, Lane, isColor, isLane, refreshColors, refreshLanes, picks as picksStore } from "$lib/data/stores";
 
 	let previousMessageOrNull: any | null = null;
 	let selectedChampionIDOrNull: string | null = null;
@@ -112,19 +112,31 @@
 	let championIDs = allChampionIDs;
 	updateChampionFilter();
 
-	function updateChampionFilter() {
-		if (laneFilterOrNull == null && colorFilterOrNull == null) {
-			championIDs = allChampionIDs;
-		} else if (laneFilterOrNull != null && colorFilterOrNull != null){
-			// @ts-ignore
-			championIDs = allChampionIDs.filter((championID) => isLane(laneFilterOrNull, championID) && isColored(colorFilterOrNull, championID));
-		} else if (laneFilterOrNull != null && colorFilterOrNull == null) {
-			// @ts-ignore
-			championIDs = allChampionIDs.filter((championID) => isLane(laneFilterOrNull, championID));
-		} else if (laneFilterOrNull == null && colorFilterOrNull != null) {
-			// @ts-ignore
-			championIDs = allChampionIDs.filter((championID) => isColored(colorFilterOrNull, championID));
+	type LanePredicate = (lane: Lane | null, championIDOrNull: string | null) => boolean;
+
+	function getLaneFilterPredicate(laneFilterOrNull: Lane | null): LanePredicate {
+		if (laneFilterOrNull == null) {
+			return (_lane, _championIDOrNull) => true;
 		}
+
+		return (lane, championIDOrNull) => isLane(lane, championIDOrNull);
+	}
+
+	type ColorPredicate = (color: Color | null, championIDOrNull: string | null) => boolean;
+
+	function getColorFilterPredicate(colorFilterOrNull: Color | null): ColorPredicate {
+		if (colorFilterOrNull == null) {
+			return (_color, _championIDOrNull) => true;
+		}
+
+		return (color, championIDOrNull) => isColor(color, championIDOrNull);
+	}
+
+	function updateChampionFilter() {
+		const laneFilterPredicate = getLaneFilterPredicate(laneFilterOrNull);
+		const colorFilterPredicate = getColorFilterPredicate(colorFilterOrNull);
+
+		championIDs = allChampionIDs.filter(championID => laneFilterPredicate(laneFilterOrNull, championID) && colorFilterPredicate(colorFilterOrNull, championID));
 	}
 
 	refreshLanes.onTrigger(() => {
