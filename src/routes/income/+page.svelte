@@ -3,11 +3,11 @@
 	import NumberSelector from "$lib/components/NumberSelector.svelte";
     import Section from "$lib/components/Section.svelte";
 	import TimeSelector from "$lib/components/TimeSelector.svelte";
+	import { Time } from '$lib/util/time';
 
     let creepScore: number;
 
-    let minutes: number;
-    let seconds: number;
+    let gameTime: Time = new Time();
 
     let isJungler: boolean = false;
 
@@ -21,43 +21,40 @@
     let campGoldEarned: number;
 
     $: {
-        let totalMinutes = minutes + seconds / 60;
+        minionsSlainPerMinute = calculateCreepScorePerMinute(creepScore, gameTime);
+        campsSlainPerMinute = calculateCreepScorePerMinute(creepScore / 4, gameTime);
 
-        minionsSlainPerMinute = calculateCreepScorePerMinute(creepScore, totalMinutes);
-        campsSlainPerMinute = calculateCreepScorePerMinute(creepScore / 4, totalMinutes);
+        let minions = Minions.until(gameTime);
+        let camps = Camps.until(gameTime);
 
-        let minions = Minions.until(totalMinutes);
-        let camps = Camps.until(totalMinutes);
+        minionEfficiency = coerce(creepScore / minions.creepScore);
+        campEfficiency = coerce(creepScore / camps.creepScore);
 
-        minionEfficiency = coerce(creepScore / minions.getCreepScore());
-        campEfficiency = coerce(creepScore / camps.getCreepScore());
-
-        minionGoldEarned = minionEfficiency * minions.getGoldIncome();
-        campGoldEarned = campEfficiency * camps.getGoldIncome();
+        minionGoldEarned = minionEfficiency * minions.goldIncome;
+        campGoldEarned = campEfficiency * camps.goldIncome;
     }
 
     function coerce(n: number) {
         return Number.isFinite(n) ? n : 0;
     }
 
-    function calculateCreepScorePerMinute(creepsSlain: number, minutes: number) {
-        const result = creepsSlain / minutes; 
+    function calculateCreepScorePerMinute(creepsSlain: number, time: Time) {
+        const result = creepsSlain / time.totalMinutes;
 
         return coerce(result);
     }
 
     class Minions {
-        private static initialWaveSpawnDelayMinutes: number = 1 + (5 / 60);
-        private static minutesPerWave: number = (30 / 60);
-        private static wavesPerMinute: number = 1 / this.minutesPerWave;
+        private static initialWaveSpawnDelay = Time.minutes(1).seconds(5);
+        private static timePerWave = Time.seconds(30);
 
-        private static wavesUntil(minutes: number) {
+        private static wavesUntil(time: Time) {
             // The "+ 1" includes the initial wave that spawns at initialWaveSpawnDelayMinutes
-            return Math.floor(1 + (minutes - this.initialWaveSpawnDelayMinutes) * this.wavesPerMinute);
+            return Math.floor(1 + (time.totalMinutes - this.initialWaveSpawnDelay.totalMinutes) / this.timePerWave.totalMinutes);
         }
 
         private static minutesAt(wave: number) {
-            return this.initialWaveSpawnDelayMinutes + (wave - 1) * this.minutesPerWave;
+            return this.initialWaveSpawnDelay.totalMinutes + (wave - 1) * this.timePerWave.totalMinutes;
         }
 
         private melees!: number;
@@ -83,10 +80,10 @@
             this.stage3Cannons = 0;
         }
 
-        public static until(minutes: number): Minions {
+        public static until(time: Time): Minions {
             const minions: Minions = new Minions(); 
 
-            const waves = this.wavesUntil(minutes);
+            const waves = this.wavesUntil(time);
 
             minions.melees = waves * 3;
             minions.ranged = waves * 3;
@@ -98,7 +95,7 @@
                     minions.stage1Cannons++;
                 } else if (minute > 15 && minute <= 25 && wave % 2 == 0) {
                     minions.stage2Cannons++;
-                } else if (minutes > 25) {
+                } else if (minute > 25) {
                     minions.stage3Cannons++;
                 }
             }
@@ -106,11 +103,11 @@
             return minions;
         }
 
-        public getCreepScore(): number {
+        public get creepScore(): number {
             return this.melees + this.ranged + this.stage1Cannons + this.stage2Cannons + this.stage3Cannons;
         }
 
-        public getGoldIncome(): number {
+        public get goldIncome(): number {
             return this.melees * Minions.goldPerMelee 
                 + this.ranged * Minions.goldPerRanged
                 + this.stage1Cannons * Minions.goldPerStage1Cannon 
@@ -165,24 +162,24 @@
             this.gromps = 0;
         }
 
-        private static spawns(minutes: number, initialSpawnMinutes: number, respawnDelayMinutes: number): number {
-            return 1 + (minutes - initialSpawnMinutes) / respawnDelayMinutes;
+        private static spawns(time: Time, initialSpawnMinutes: number, respawnDelayMinutes: number): number {
+            return 1 + (time.totalMinutes - initialSpawnMinutes) / respawnDelayMinutes;
         }
 
-        public static until(minutes: number): Camps {
+        public static until(time: Time): Camps {
             const camps: Camps = new Camps();
 
-            camps.redBuffs = Camps.spawns(minutes, this.redBuffInitialSpawnMinutes, this.redBuffRespawnDelayMinutes);
-            camps.krugs = Camps.spawns(minutes, this.krugsInitialSpawnMinutes, this.krugsRespawnDelayMinutes);
-            camps.raptors = Camps.spawns(minutes, this.raptorsInitialSpawnMinutes, this.raptorsRespawnDelayMinutes);
-            camps.wolves = Camps.spawns(minutes, this.wolvesInitialSpawnMinutes, this.wolvesRespawnDelayMinutes);
-            camps.blueBuffs = Camps.spawns(minutes, this.blueBuffInitialSpawnMinutes, this.blueBuffRespawnDelayMinutes);
-            camps.gromps = Camps.spawns(minutes, this.grompInitialSpawnMinutes, this.grompRespawnDelayMinutes);
+            camps.redBuffs = Camps.spawns(time, this.redBuffInitialSpawnMinutes, this.redBuffRespawnDelayMinutes);
+            camps.krugs = Camps.spawns(time, this.krugsInitialSpawnMinutes, this.krugsRespawnDelayMinutes);
+            camps.raptors = Camps.spawns(time, this.raptorsInitialSpawnMinutes, this.raptorsRespawnDelayMinutes);
+            camps.wolves = Camps.spawns(time, this.wolvesInitialSpawnMinutes, this.wolvesRespawnDelayMinutes);
+            camps.blueBuffs = Camps.spawns(time, this.blueBuffInitialSpawnMinutes, this.blueBuffRespawnDelayMinutes);
+            camps.gromps = Camps.spawns(time, this.grompInitialSpawnMinutes, this.grompRespawnDelayMinutes);
 
             return camps;
         }
 
-        public getCreepScore() {
+        public get creepScore() {
             return this.redBuffs * Camps.redBuffCreepScore
                 + this.krugs * Camps.krugsCreepScore
                 + this.raptors * Camps.raptorsCreepScore
@@ -191,7 +188,7 @@
                 + this.gromps * Camps.grompCreepScore;
         }
 
-        public getGoldIncome() {
+        public get goldIncome() {
             return this.redBuffs * Camps.redBuffGold
                 + this.krugs * Camps.krugsGold
                 + this.raptors * Camps.raptorsGold
@@ -210,7 +207,7 @@
         </div>
         <div>
             <h2>Game Time</h2>
-            <TimeSelector bind:minutes bind:seconds />
+            <TimeSelector bind:time={gameTime} />
         </div>
     </div>
     <div>

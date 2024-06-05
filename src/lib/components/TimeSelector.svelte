@@ -1,16 +1,17 @@
 <script lang="ts">
-    export let minutes: number = 0;
-    export let seconds: number = 0;
+	import { Time } from "$lib/util/time";
+
+    export let time: Time = new Time();
 
     let minutesValue: string = "0";
     let secondsValue: string = "00";
 
     $: {
-        minutes = Number(minutesValue);
+        time = time?.minutes(Number(minutesValue));
     }
 
     $: {
-        seconds = Number(secondsValue);
+        time = time?.seconds(Number(secondsValue));
     }
 
     function format(event: Event) {
