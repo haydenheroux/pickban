@@ -24,14 +24,16 @@
         minionsSlainPerMinute = calculateCreepScorePerMinute(creepScore, gameTime);
         campsSlainPerMinute = calculateCreepScorePerMinute(creepScore / 4, gameTime);
 
-        let minions = Minions.until(gameTime);
-        let camps = Camps.until(gameTime);
+        let minions = countMinionSpawnsUntil(gameTime);
+        let camps = countCampSpawnsUntil(gameTime);
 
-        minionEfficiency = coerce(creepScore / minions.creepScore);
-        campEfficiency = coerce(creepScore / camps.creepScore);
+        console.log(camps);
 
-        minionGoldEarned = minionEfficiency * minions.goldIncome;
-        campGoldEarned = campEfficiency * camps.goldIncome;
+        minionEfficiency = coerce(creepScore / calculateCreepScore(minions));
+        campEfficiency = coerce(creepScore / calculateCreepScore(camps));
+
+        minionGoldEarned = minionEfficiency * calculateGoldIncome(minions);
+        campGoldEarned = campEfficiency * calculateGoldIncome(camps);
     }
 
     function coerce(n: number) {
@@ -44,158 +46,121 @@
         return coerce(result);
     }
 
-    class Minions {
-        private static initialWaveSpawnDelay = Time.minutes(1).seconds(5);
-        private static timePerWave = Time.seconds(30);
+    interface Resource {
+        readonly initialSpawn: Time;
+        readonly respawnDelay: Time;
+        readonly count: number;
+        readonly gold: number;
+        readonly creepScore: number;
+    }
 
-        private static wavesUntil(time: Time) {
-            // The "+ 1" includes the initial wave that spawns at initialWaveSpawnDelayMinutes
-            return Math.floor(1 + (time.totalMinutes - this.initialWaveSpawnDelay.totalMinutes) / this.timePerWave.totalMinutes);
-        }
-
-        private static minutesAt(wave: number) {
-            return this.initialWaveSpawnDelay.totalMinutes + (wave - 1) * this.timePerWave.totalMinutes;
-        }
-
-        private melees!: number;
-        private static goldPerMelee: number = 21;
-
-        private ranged!: number;
-        private static goldPerRanged: number = 14;
-
-        private stage1Cannons!: number;
-        private static goldPerStage1Cannon: number = 60;
-        
-        private stage2Cannons!: number;
-        private static goldPerStage2Cannon: number = 84;
-
-        private stage3Cannons!: number;
-        private static goldPerStage3Cannon: number = 90;
-
-        private constructor() {
-            this.melees = 0;
-            this.ranged = 0;
-            this.stage1Cannons = 0;
-            this.stage2Cannons = 0;
-            this.stage3Cannons = 0;
-        }
-
-        public static until(time: Time): Minions {
-            const minions: Minions = new Minions(); 
-
-            const waves = this.wavesUntil(time);
-
-            minions.melees = waves * 3;
-            minions.ranged = waves * 3;
-
-            for (let wave = 1; wave <= waves; wave++) {
-                let minute = this.minutesAt(wave);
-
-                if (minute <= 15 && wave % 3 == 0) {
-                    minions.stage1Cannons++;
-                } else if (minute > 15 && minute <= 25 && wave % 2 == 0) {
-                    minions.stage2Cannons++;
-                } else if (minute > 25) {
-                    minions.stage3Cannons++;
-                }
-            }
-
-            return minions;
-        }
-
-        public get creepScore(): number {
-            return this.melees + this.ranged + this.stage1Cannons + this.stage2Cannons + this.stage3Cannons;
-        }
-
-        public get goldIncome(): number {
-            return this.melees * Minions.goldPerMelee 
-                + this.ranged * Minions.goldPerRanged
-                + this.stage1Cannons * Minions.goldPerStage1Cannon 
-                + this.stage2Cannons * Minions.goldPerStage2Cannon 
-                + this.stage3Cannons * Minions.goldPerStage3Cannon;
+    function createResource(initialSpawn: Time, respawnDelay: Time, count: number, creepScore: number, gold: number): Resource {
+        return {
+            initialSpawn,
+            respawnDelay,
+            count,
+            creepScore,
+            gold
         }
     }
 
-    class Camps {
-        private redBuffs!: number;
-        private static redBuffInitialSpawnMinutes: number = 1 + (30 / 60);
-        private static redBuffRespawnDelayMinutes: number = 5;
-        private static redBuffCreepScore: number = 4;
-        private static redBuffGold: number = 90;
+    function createWaveMinion(initialSpawn: Time, respawnDelay: Time, gold: number): Resource {
+        return createResource(initialSpawn, respawnDelay, 3, 3, gold);
+    }
 
-        private krugs!: number;
-        private static krugsInitialSpawnMinutes: number = 1 + (42 / 60);
-        private static krugsRespawnDelayMinutes: number = 2 + (15 / 60);
-        private static krugsCreepScore: number = 4;
-        private static krugsGold: number = 15 + 10 + 6 * 14;
+    function createCannonMinion(initialSpawn: Time, respawnDelay: Time, gold: number): Resource {
+        return createResource(initialSpawn, respawnDelay, 1, 1, gold);
+    }
 
-        private raptors!: number;
-        private static raptorsInitialSpawnMinutes: number = 1 + (30 / 60);
-        private static raptorsRespawnDelayMinutes: number = 2 + (15 / 60);
-        private static raptorsCreepScore: number = 4;
-        private static raptorsGold: number = 35 + 5 * 8;
+    function createCamp(initialSpawn: Time, respawnDelay: Time, gold: number): Resource {
+        return createResource(initialSpawn, respawnDelay, 1, 4, gold);
+    }
 
-        private wolves!: number;
-        private static wolvesInitialSpawnMinutes: number = 1 + (30 / 60);
-        private static wolvesRespawnDelayMinutes: number = 2 + (15 / 60);
-        private static wolvesCreepScore: number = 4;
-        private static wolvesGold: number = 55 + 2 * 13;
+    function countSpawnsUntil(resource: Resource, time: Time) {
+        const elapsedMinutes = time.totalMinutes - resource.initialSpawn.totalMinutes;
+        const respawnCount = Math.floor(elapsedMinutes / resource.respawnDelay.totalMinutes);
 
-        private blueBuffs!: number;
-        private static blueBuffInitialSpawnMinutes: number = 1 + (30 / 60);
-        private static blueBuffRespawnDelayMinutes: number = 5;
-        private static blueBuffCreepScore: number = 4;
-        private static blueBuffGold: number = 90;
+        return Math.max(1 + respawnCount, 0);
+    }
 
-        private gromps!: number;
-        private static grompInitialSpawnMinutes: number = 1 + (42 / 60);
-        private static grompRespawnDelayMinutes: number = 2 + (15 / 60);
-        private static grompCreepScore: number = 4;
-        private static grompGold: number = 80;
+    function calculateCreepScore(resourceCounts: Map<Resource, number>): number {
+        let creepScore = 0;
 
-        private constructor() {
-            this.redBuffs = 0;
-            this.krugs = 0;
-            this.raptors = 0;
-            this.wolves = 0;
-            this.blueBuffs = 0;
-            this.gromps = 0;
+        resourceCounts.forEach((count: number, resource: Resource, _) => {
+            creepScore += resource.creepScore * count;
+        });
+
+        return creepScore;
+    }
+
+    function calculateGoldIncome(resourceCounts: Map<Resource, number>): number {
+        let goldIncome = 0;
+
+        resourceCounts.forEach((count: number, resource: Resource, _) => {
+            goldIncome += resource.gold * resource.count * count;
+        });
+
+        return goldIncome;
+    }
+
+    const initialWaveSpawn = Time.minutes(1).seconds(5);
+    const waveRespawn = Time.seconds(30);
+
+    const meleeMinion = createWaveMinion(initialWaveSpawn, waveRespawn, 21);
+    const rangedMinion = createWaveMinion(initialWaveSpawn, waveRespawn, 14);
+    const stage1Cannon = createCannonMinion(Time.minutes(2).seconds(5), Time.minutes(1).seconds(30), 60);
+    const stage2Cannon = createCannonMinion(Time.minutes(15).seconds(5), Time.minutes(1), 84);
+    const stage3Cannon = createCannonMinion(Time.minutes(25).seconds(5), Time.seconds(30), 90);
+
+    function countMinionSpawnsUntil(time: Time): Map<Resource, number> {
+        const minionSpawnCounts = new Map<Resource, number>();
+
+        const add = (resource: Resource, time_: Time) => {
+            minionSpawnCounts.set(resource, countSpawnsUntil(resource, time_));
         }
 
-        private static spawns(time: Time, initialSpawnMinutes: number, respawnDelayMinutes: number): number {
-            return 1 + (time.totalMinutes - initialSpawnMinutes) / respawnDelayMinutes;
+        add(meleeMinion, time);
+        add(rangedMinion, time);
+
+        const stage1StopsSpawning = Time.minutes(Math.min(time.totalMinutes, stage2Cannon.initialSpawn.totalMinutes));
+        const stage2StopsSpawning = Time.minutes(Math.min(time.totalMinutes, stage3Cannon.initialSpawn.totalMinutes));
+
+        add(stage1Cannon, stage1StopsSpawning);
+        add(stage2Cannon, stage2StopsSpawning);
+        add(stage3Cannon, time);
+
+        return minionSpawnCounts;
+    }
+
+    const innerCampsSpawn = Time.minutes(1).seconds(30);
+    const outerCampsSpawn = Time.minutes(1).seconds(42);
+
+    const buffsRespawn = Time.minutes(5);
+    const campsRespawn = Time.minutes(2).seconds(15);
+
+    const redBuff = createCamp(innerCampsSpawn, buffsRespawn, 90);
+    const blueBuff = createCamp(innerCampsSpawn, buffsRespawn, 90);
+
+    const krugs = createCamp(outerCampsSpawn, campsRespawn, 15 + 10 + 6 * 14);
+    const raptors = createCamp(innerCampsSpawn, campsRespawn, 35 + 5 * 8);
+    const wolves = createCamp(innerCampsSpawn, campsRespawn, 55 + 2 * 13);
+    const gromp = createCamp(outerCampsSpawn, campsRespawn, 80);
+
+    function countCampSpawnsUntil(time: Time): Map<Resource, number> {
+        const campSpawnCounts = new Map<Resource, number>();
+
+        const add = (resource: Resource, time_: Time) => {
+            campSpawnCounts.set(resource, countSpawnsUntil(resource, time_));
         }
 
-        public static until(time: Time): Camps {
-            const camps: Camps = new Camps();
+        add(redBuff, time);
+        add(blueBuff, time);
+        add(krugs, time);
+        add(raptors, time);
+        add(wolves, time);
+        add(gromp, time);
 
-            camps.redBuffs = Camps.spawns(time, this.redBuffInitialSpawnMinutes, this.redBuffRespawnDelayMinutes);
-            camps.krugs = Camps.spawns(time, this.krugsInitialSpawnMinutes, this.krugsRespawnDelayMinutes);
-            camps.raptors = Camps.spawns(time, this.raptorsInitialSpawnMinutes, this.raptorsRespawnDelayMinutes);
-            camps.wolves = Camps.spawns(time, this.wolvesInitialSpawnMinutes, this.wolvesRespawnDelayMinutes);
-            camps.blueBuffs = Camps.spawns(time, this.blueBuffInitialSpawnMinutes, this.blueBuffRespawnDelayMinutes);
-            camps.gromps = Camps.spawns(time, this.grompInitialSpawnMinutes, this.grompRespawnDelayMinutes);
-
-            return camps;
-        }
-
-        public get creepScore() {
-            return this.redBuffs * Camps.redBuffCreepScore
-                + this.krugs * Camps.krugsCreepScore
-                + this.raptors * Camps.raptorsCreepScore
-                + this.wolves * Camps.wolvesCreepScore
-                + this.blueBuffs * Camps.blueBuffCreepScore
-                + this.gromps * Camps.grompCreepScore;
-        }
-
-        public get goldIncome() {
-            return this.redBuffs * Camps.redBuffGold
-                + this.krugs * Camps.krugsGold
-                + this.raptors * Camps.raptorsGold
-                + this.wolves * Camps.wolvesGold
-                + this.blueBuffs * Camps.blueBuffGold
-                + this.gromps * Camps.grompGold;
-        }
+        return campSpawnCounts;
     }
 </script>
 
