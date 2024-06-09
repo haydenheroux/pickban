@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { map } from "$lib/data/assets";
 	import { getImageOrNull } from "$lib/data/data_dragon";
 	import { picks } from "$lib/data/stores";
 	import { onMount } from "svelte";
@@ -9,7 +10,7 @@
 
     onMount(() => {
             imageOrNull = new Image();
-            imageOrNull.src = "map.jpg";
+            imageOrNull.src = map;
             imageOrNull.onload = () => {
                 if (!canvasOrNull) return;
                 if (!imageOrNull) return;

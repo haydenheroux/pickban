@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ChampionFrame from "$lib/components/ChampionFrame.svelte";
-	import { lanes } from "$lib/data/assets";
+	import { colors, lanes, close } from "$lib/data/assets";
 	import { allChampionIDs } from "$lib/data/data_dragon";
 	import { Color, Lane, isColor, isLane, refreshColors, refreshLanes, picks as picksStore } from "$lib/data/stores";
 
@@ -87,14 +87,6 @@
 		updateChampionFilter();
 		updateLaneFilterMap();
 	}
-
-    const colors = [
-        {color: Color.Red, src: "red.svg"},
-        {color: Color.Green, src: "green.svg"},
-        {color: Color.Blue, src: "blue.svg"},
-        {color: Color.White, src: "white.svg"},
-        {color: Color.Black, src: "black.svg"},
-    ];
 
 	let colorFilterOrNull: Color | null = null;
 
@@ -222,7 +214,7 @@
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
 				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 				<!-- svelte-ignore a11y-missing-attribute -->
-				<img src={"close.png"} on:click={clearPickBan}>
+				<img src={close} on:click={clearPickBan}>
 			</div>
 		</div>
 		<div class="palette">

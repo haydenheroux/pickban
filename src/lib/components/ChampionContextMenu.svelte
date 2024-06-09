@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { colors, lanes } from "$lib/data/assets";
 	import { getChampionNameOrNull } from "$lib/data/data_dragon";
 	import { Color, Lane, addColor, addLane, isColor, isLane, removeColor, removeLane } from "$lib/data/stores";
     export let championID: string | null = null;
@@ -9,22 +10,6 @@
     let name: string;
 
     $: name = getChampionNameOrNull(championID);
-
-    const colors = [
-        {color: Color.Red, src: "red.svg"},
-        {color: Color.Green, src: "green.svg"},
-        {color: Color.Blue, src: "blue.svg"},
-        {color: Color.White, src: "white.svg"},
-        {color: Color.Black, src: "black.svg"},
-    ];
-
-    const lanes = [
-        {lane: Lane.Top, src: "top.png"},
-        {lane: Lane.Jungle, src: "jungle.png"},
-        {lane: Lane.Middle, src: "middle.png"},
-        {lane: Lane.Bottom, src: "bottom.png"},
-        {lane: Lane.Support, src: "support.png"},
-    ];
 </script>
 
 <nav class="context-menu" style="position: absolute; left: {x}px; top: {y}px;" on:contextmenu|preventDefault={() => {}}>
