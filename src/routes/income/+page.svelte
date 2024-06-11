@@ -5,11 +5,11 @@
 	import TimeSelector from "$lib/components/TimeSelector.svelte";
 	import { Time } from '$lib/util/time';
 
-    type role = "Laner" | "Jungler";
+    type Role = "Laner" | "Jungler";
 
-    const roles: role[] = ["Laner", "Jungler"];
+    const roles: Role[] = ["Laner", "Jungler"];
 
-    let selectedRole: role; 
+    let selectedRole: Role; 
 
     let creepScore: number;
 
@@ -28,9 +28,9 @@
         let resources: Map<Resource, number> = new Map();
 
         if (selectedRole == "Jungler") {
-            resources = countCampSpawnsUntil(time);
+            resources = spawnsUntil(Camps, time);
         } else {
-            resources = countMinionSpawnsUntil(time);
+            resources = spawnsUntil(Minions, time);
         }
 
         resourceKeys = [];
@@ -68,16 +68,18 @@
     }
 
     interface Resource {
-        readonly initialSpawn: Time;
+        readonly startsAt: Time;
+        readonly endsAt: Time | null;
         readonly respawnDelay: Time;
         readonly count: number;
         readonly gold: number;
         readonly creepScore: number;
     }
 
-    function createResource(initialSpawn: Time, respawnDelay: Time, count: number, creepScore: number, gold: number): Resource {
+    function createResource(startsAt: Time, endsAt: Time | null, respawnDelay: Time, count: number, creepScore: number, gold: number): Resource {
         return {
-            initialSpawn,
+            startsAt,
+            endsAt,
             respawnDelay,
             count,
             creepScore,
@@ -85,24 +87,61 @@
         }
     }
 
-    function createWaveMinion(initialSpawn: Time, respawnDelay: Time, gold: number): Resource {
-        return createResource(initialSpawn, respawnDelay, 3, 1, gold);
+    function createBasicMinion(gold: number): Resource {
+        return createResource(Time.minutes(1).seconds(5), null, Time.seconds(30), 3, 1, gold);
     }
 
-    function createCannonMinion(initialSpawn: Time, respawnDelay: Time, gold: number): Resource {
-        return createResource(initialSpawn, respawnDelay, 1, 1, gold);
+    function createCannonMinion(startsAt: Time, endsAt: Time | null, respawnDelay: Time, gold: number): Resource {
+        return createResource(startsAt, endsAt, respawnDelay, 1, 1, gold);
     }
 
-    function createCamp(initialSpawn: Time, respawnDelay: Time, gold: number): Resource {
-        return createResource(initialSpawn, respawnDelay, 1, 4, gold);
+    function createStageOneCannonMinion() {
+        return createCannonMinion(Time.minutes(2).seconds(5), Time.minutes(15).seconds(5), Time.minutes(1).seconds(30), 60);
     }
 
-    function countSpawnsUntil(resource: Resource, time: Time) {
-        const elapsedMinutes = time.totalMinutes - resource.initialSpawn.totalMinutes;
-        const respawnCount = Math.floor(elapsedMinutes / resource.respawnDelay.totalMinutes);
-
-        return Math.max(1 + respawnCount, 0);
+    function createStageTwoCannonMinion() {
+        return createCannonMinion(Time.minutes(15).seconds(5), Time.minutes(25).seconds(5), Time.minutes(1), 84);
     }
+
+    function createStageThreeCannonMinion() {
+        return createCannonMinion(Time.minutes(25).seconds(5), null, Time.seconds(30), 90);
+    }
+
+    function createCamp(startsAt: Time, respawnDelay: Time, gold: number): Resource {
+        return createResource(startsAt, null, respawnDelay, 1, 4, gold);
+    }
+
+    function createBuff(): Resource {
+        return createCamp(Time.minutes(1).seconds(30), Time.minutes(5), 90);
+    }
+
+    function createInnerCamp(gold: number): Resource {
+        return createCamp(Time.minutes(1).seconds(30), Time.minutes(2).seconds(15), gold);
+    }
+
+    function createOuterCamp(gold: number): Resource {
+        return createCamp(Time.minutes(1).seconds(42), Time.minutes(2).seconds(15), gold);
+    }
+
+    const MeleeMinion = createBasicMinion(21);
+    const RangedMinion = createBasicMinion(14);
+
+    const StageOneCannonMinion = createStageOneCannonMinion();
+    const StageTwoCannonMinion = createStageTwoCannonMinion();
+    const StageThreeCannonMinion = createStageThreeCannonMinion();
+
+    const Minions = [MeleeMinion, RangedMinion, StageOneCannonMinion, StageTwoCannonMinion, StageThreeCannonMinion];
+
+    const RedBuff = createBuff();
+    const BlueBuff = createBuff();
+
+    const Krugs = createOuterCamp(15 + 10 + 6 * 14);
+    const Gromp = createOuterCamp(80);
+
+    const Raptors = createInnerCamp(35 + 5 * 8);
+    const Wolves = createInnerCamp(55 + 2 * 13);
+
+    const Camps = [RedBuff, BlueBuff, Krugs, Gromp, Raptors, Wolves];
 
     function calculateCreepScore(resourceCounts: Map<Resource, number>): number {
         let creepScore = 0;
@@ -124,93 +163,55 @@
         return goldIncome;
     }
 
-    const initialWaveSpawn = Time.minutes(1).seconds(5);
-    const waveRespawn = Time.seconds(30);
 
-    const meleeMinion = createWaveMinion(initialWaveSpawn, waveRespawn, 21);
-    const rangedMinion = createWaveMinion(initialWaveSpawn, waveRespawn, 14);
-    const stage1Cannon = createCannonMinion(Time.minutes(2).seconds(5), Time.minutes(1).seconds(30), 60);
-    const stage2Cannon = createCannonMinion(Time.minutes(15).seconds(5), Time.minutes(1), 84);
-    const stage3Cannon = createCannonMinion(Time.minutes(25).seconds(5), Time.seconds(30), 90);
+    function spawnsUntil(resources: Resource[], time: Time): Map<Resource, number> {
+        const counts = new Map<Resource, number>();
 
-    function countMinionSpawnsUntil(time: Time): Map<Resource, number> {
-        const minionSpawnCounts = new Map<Resource, number>();
+        function numberOfSpawns(resource: Resource, time: Time): number {
+            if (resource.endsAt != null) {
+                time = Time.minutes(Math.min(time.totalMinutes, resource.endsAt.totalMinutes));
+            }
 
-        const add = (resource: Resource, time_: Time) => {
-            minionSpawnCounts.set(resource, countSpawnsUntil(resource, time_) * resource.count);
+            const elapsedMinutes = time.totalMinutes - resource.startsAt.totalMinutes;
+            const respawnCount = Math.floor(elapsedMinutes / resource.respawnDelay.totalMinutes);
+
+            return Math.max(1 + respawnCount, 0);
         }
 
-        add(meleeMinion, time);
-        add(rangedMinion, time);
-
-        const stage1StopsSpawning = Time.minutes(Math.min(time.totalMinutes, stage2Cannon.initialSpawn.totalMinutes));
-        const stage2StopsSpawning = Time.minutes(Math.min(time.totalMinutes, stage3Cannon.initialSpawn.totalMinutes));
-
-        add(stage1Cannon, stage1StopsSpawning);
-        add(stage2Cannon, stage2StopsSpawning);
-        add(stage3Cannon, time);
-
-        return minionSpawnCounts;
-    }
-
-    const innerCampsSpawn = Time.minutes(1).seconds(30);
-    const outerCampsSpawn = Time.minutes(1).seconds(42);
-
-    const buffsRespawn = Time.minutes(5);
-    const campsRespawn = Time.minutes(2).seconds(15);
-
-    const redBuff = createCamp(innerCampsSpawn, buffsRespawn, 90);
-    const blueBuff = createCamp(innerCampsSpawn, buffsRespawn, 90);
-
-    const krugs = createCamp(outerCampsSpawn, campsRespawn, 15 + 10 + 6 * 14);
-    const raptors = createCamp(innerCampsSpawn, campsRespawn, 35 + 5 * 8);
-    const wolves = createCamp(innerCampsSpawn, campsRespawn, 55 + 2 * 13);
-    const gromp = createCamp(outerCampsSpawn, campsRespawn, 80);
-
-    function countCampSpawnsUntil(time: Time): Map<Resource, number> {
-        const campSpawnCounts = new Map<Resource, number>();
-
-        const add = (resource: Resource, time_: Time) => {
-            campSpawnCounts.set(resource, countSpawnsUntil(resource, time_));
+        for (let resource of resources) {
+            counts.set(resource, numberOfSpawns(resource, time) * resource.count);
         }
 
-        add(redBuff, time);
-        add(blueBuff, time);
-        add(krugs, time);
-        add(raptors, time);
-        add(wolves, time);
-        add(gromp, time);
-
-        return campSpawnCounts;
+        return counts;
     }
 
     function getResourceName(resource: Resource): string {
-        if (resource === meleeMinion) return "Melee Minion";
-        if (resource === rangedMinion) return "Ranged Minion";
-        if (resource === stage1Cannon) return "Stage 1 Cannon Minion";
-        if (resource === stage2Cannon) return "Stage 2 Cannon Minion";
-        if (resource === stage3Cannon) return "Stage 3 Cannon Minion";
-        if (resource === redBuff) return "Red Buff";
-        if (resource === blueBuff) return "Blue Buff";
-        if (resource === krugs) return "Krugs";
-        if (resource === raptors) return "Raptors";
-        if (resource === wolves) return "Wolves";
-        if (resource === gromp) return "Gromp";
+        if (resource === MeleeMinion) return "Melee Minion";
+        if (resource === RangedMinion) return "Ranged Minion";
+        if (resource === StageOneCannonMinion) return "Stage 1 Cannon Minion";
+        if (resource === StageTwoCannonMinion) return "Stage 2 Cannon Minion";
+        if (resource === StageThreeCannonMinion) return "Stage 3 Cannon Minion";
+        if (resource === RedBuff) return "Red Buff";
+        if (resource === BlueBuff) return "Blue Buff";
+        if (resource === Krugs) return "Krugs";
+        if (resource === Raptors) return "Raptors";
+        if (resource === Wolves) return "Wolves";
+        if (resource === Gromp) return "Gromp";
         return "unknown resource";
     }
 
     function getResourceAsset(resource: Resource): string {
-        if (resource === meleeMinion) return "minions/melee.png";
-        if (resource === rangedMinion) return "minions/ranged.png";
-        if (resource === stage1Cannon) return "minions/cannon.png";
-        if (resource === stage2Cannon) return "minions/cannon.png";
-        if (resource === stage3Cannon) return "minions/cannon.png";
-        if (resource === redBuff) return "camps/red.png";
-        if (resource === blueBuff) return "camps/blue.png";
-        if (resource === krugs) return "camps/krugs.png";
-        if (resource === raptors) return "camps/raptors.png";
-        if (resource === wolves) return "camps/wolves.png";
-        if (resource === gromp) return "camps/gromp.png";
+        if (resource === MeleeMinion) return "minions/melee.png";
+        if (resource === RangedMinion) return "minions/ranged.png";
+        if (resource === StageOneCannonMinion) return "minions/cannon.png";
+        if (resource === StageTwoCannonMinion) return "minions/cannon.png";
+        if (resource === StageThreeCannonMinion) return "minions/cannon.png";
+        if (resource === RedBuff) return "camps/red.png";
+        if (resource === BlueBuff) return "camps/blue.png";
+        if (resource === Krugs) return "camps/krugs.png";
+        if (resource === Raptors) return "camps/raptors.png";
+        if (resource === Wolves) return "camps/wolves.png";
+        if (resource === Gromp) return "camps/gromp.png";
         return "";
     }
 </script>
