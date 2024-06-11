@@ -1,40 +1,67 @@
 <script lang="ts">
-	import BooleanSelector from '$lib/components/BooleanSelector.svelte';
 	import NumberSelector from "$lib/components/NumberSelector.svelte";
     import Section from "$lib/components/Section.svelte";
 	import TimeSelector from "$lib/components/TimeSelector.svelte";
 	import { Time } from '$lib/util/time';
 
+    type role = "Laner" | "Jungler";
+
+    const roles: role[] = ["Laner", "Jungler"];
+
+    let selectedRole: role; 
+
     let creepScore: number;
 
     let gameTime: Time = new Time();
 
-    let minions: Map<Resource, number>;
-    let camps: Map<Resource, number>;
+    let resourceKeys: Resource[] = [];
+    let resourceCounts: number[] = [];
 
-    let isJungler: boolean = false;
+    let expectedIncome: number;
+    let efficiency: number;
+    let actualIncome: number;
 
-    let minionsSlainPerMinute: number;
-    let campsSlainPerMinute: number;
+    function isJungler(selectedRole: role): boolean {
+        return selectedRole == "Jungler";
+    }
 
-    let minionEfficiency: number;
-    let campEfficiency: number;
+    function fillCounts() {
+        let resources: Map<Resource, number> = new Map();
 
-    let minionGoldEarned: number;
-    let campGoldEarned: number;
+        if (isJungler(selectedRole)) {
+            resources = countCampSpawnsUntil(gameTime);
+        } else {
+            resources = countMinionSpawnsUntil(gameTime);
+        }
+
+        clearResources();
+
+        resources.forEach((count, resource, _) => {
+            resourceKeys.push(resource);
+            resourceCounts.push(count);
+        });
+
+        resourceKeys = resourceKeys;
+        resourceCounts = resourceCounts;
+    }
+
+    function clearResources() {
+        resourceKeys = [];
+        resourceCounts = [];
+    }
 
     $: {
-        minionsSlainPerMinute = calculateCreepScorePerMinute(creepScore, gameTime);
-        campsSlainPerMinute = calculateCreepScorePerMinute(creepScore / 4, gameTime);
+        let resources: Map<Resource, number> = new Map();
 
-        minions = countMinionSpawnsUntil(gameTime);
-        camps = countCampSpawnsUntil(gameTime);
+        resourceKeys.forEach((resource, index) => {
+            let resourceCount = resourceCounts[index];
+            resources.set(resource, resourceCount);
+        });
 
-        minionEfficiency = coerce(creepScore / calculateCreepScore(minions));
-        campEfficiency = coerce(creepScore / calculateCreepScore(camps));
+        expectedIncome = calculateGoldIncome(resources);
+        efficiency = coerce(creepScore / calculateCreepScore(resources));
 
-        minionGoldEarned = minionEfficiency * calculateGoldIncome(minions);
-        campGoldEarned = campEfficiency * calculateGoldIncome(camps);
+        actualIncome = efficiency * expectedIncome;
     }
 
     function coerce(n: number) {
@@ -66,7 +93,7 @@
     }
 
     function createWaveMinion(initialSpawn: Time, respawnDelay: Time, gold: number): Resource {
-        return createResource(initialSpawn, respawnDelay, 3, 3, gold);
+        return createResource(initialSpawn, respawnDelay, 3, 1, gold);
     }
 
     function createCannonMinion(initialSpawn: Time, respawnDelay: Time, gold: number): Resource {
@@ -98,7 +125,7 @@
         let goldIncome = 0;
 
         resourceCounts.forEach((count: number, resource: Resource, _) => {
-            goldIncome += resource.gold * resource.count * count;
+            goldIncome += resource.gold * count;
         });
 
         return goldIncome;
@@ -117,7 +144,7 @@
         const minionSpawnCounts = new Map<Resource, number>();
 
         const add = (resource: Resource, time_: Time) => {
-            minionSpawnCounts.set(resource, countSpawnsUntil(resource, time_));
+            minionSpawnCounts.set(resource, countSpawnsUntil(resource, time_) * resource.count);
         }
 
         add(meleeMinion, time);
@@ -184,34 +211,36 @@
 </script>
 
 <Section>
-    <div>
-        <h2>Game Time</h2>
-        <TimeSelector bind:time={gameTime} />
+    <div class="split">
+        <div>
+            <h2>Game Time</h2>
+            <TimeSelector bind:time={gameTime} />
+        </div>
+        <div>
+            <h2>Role</h2>
+            <select bind:value={selectedRole} on:change={clearResources}>
+                {#each roles as role}
+                    <option>{role}</option>
+                {/each}
+            </select>
+        </div>
     </div>
-    <div>
-        <h2>Role</h2>
-        <BooleanSelector bind:value={isJungler} left={"Laner"} right={"Jungler"} />
-    </div>
+    <button class="active" on:click={fillCounts}>Fill Counts</button>
 </Section>
 
-{#if !isJungler}
-    <Section>
-        <div>
-            <h2>Counts</h2>
-            {#each minions as [resource, number]}
-                {@const name=getResourceName(resource)}
-                <div class="resource-container">
-                    <img src={getResourceAsset(resource)} title={name} alt={name}>
-                    <NumberSelector bind:value={number} plusMinus={false} />
-                </div>
-            {/each}
+<Section>
+    {#each resourceKeys as resource, index}
+        {@const name=getResourceName(resource)}
+        <div class="resource-container">
+            <img src={getResourceAsset(resource)} title={name} alt={name}>
+            <NumberSelector bind:value={resourceCounts[index]} plusMinus={true} />
         </div>
-        <div class="gold-container">
-            <h2>{calculateGoldIncome(minions).toFixed()}</h2>
-            <img src="ui/gold.png" alt="Gold">
-        </div>
-    </Section>
-{/if}
+    {/each}
+    <div class="gold-container">
+        <h2>{expectedIncome.toFixed()}</h2>
+        <img src="ui/gold.png" alt="Gold">
+    </div>
+</Section>
 
 <Section>
     <div class="split">
@@ -220,29 +249,20 @@
             <NumberSelector bind:value={creepScore} plusMinus={false} />
         </div>
         <div>
-            {#if isJungler}
-                <h2>Jungle Camps Slain Per Minute</h2>
-                <NumberSelector value={campsSlainPerMinute} plusMinus={false} />
-            {:else}
-                <h2>Minions Slain Per Minute</h2>
-                <NumberSelector value={minionsSlainPerMinute} plusMinus={false} />
-            {/if}
+            <h2>Creep Score Per Minute</h2>
+            <NumberSelector value={calculateCreepScorePerMinute(creepScore, gameTime)} plusMinus={false} />
         </div>
     </div>
     <div class="actual-gold-container">
         <div class="gold-container">
-            <h2>{calculateGoldIncome(minions).toFixed()}</h2>
+            <h2>{expectedIncome.toFixed()}</h2>
             <img src="ui/gold.png" alt="Gold">
         </div>
         <p>×</p>
-        {#if isJungler}
-            <h2>{(100 * campEfficiency).toFixed(2)}%</h2>
-        {:else}
-            <h2>{(100 * minionEfficiency).toFixed(2)}%</h2>
-        {/if}
+        <h2>{(100 * efficiency).toFixed(2)}%</h2>
         <p>=</p>
         <div class="gold-container">
-            <h2>{(calculateGoldIncome(minions) * minionEfficiency).toFixed()}</h2>
+            <h2>{actualIncome.toFixed()}</h2>
             <img src="ui/gold.png" alt="Gold">
         </div>
     </div>
