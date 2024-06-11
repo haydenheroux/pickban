@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import NumberSelector from "$lib/components/NumberSelector.svelte";
     import Section from "$lib/components/Section.svelte";
 	import TimeSelector from "$lib/components/TimeSelector.svelte";
@@ -21,20 +22,19 @@
     let efficiency: number;
     let actualIncome: number;
 
-    function isJungler(selectedRole: role): boolean {
-        return selectedRole == "Jungler";
-    }
+    onMount(clearResources);
 
-    function fillCounts() {
+    function fillCountsUntil(time: Time) {
         let resources: Map<Resource, number> = new Map();
 
-        if (isJungler(selectedRole)) {
-            resources = countCampSpawnsUntil(gameTime);
+        if (selectedRole == "Jungler") {
+            resources = countCampSpawnsUntil(time);
         } else {
-            resources = countMinionSpawnsUntil(gameTime);
+            resources = countMinionSpawnsUntil(time);
         }
 
-        clearResources();
+        resourceKeys = [];
+        resourceCounts = [];
 
         resources.forEach((count, resource, _) => {
             resourceKeys.push(resource);
@@ -46,8 +46,7 @@
     }
 
     function clearResources() {
-        resourceKeys = [];
-        resourceCounts = [];
+        fillCountsUntil(Time.minutes(0).seconds(0));
     }
 
     $: {
@@ -197,7 +196,13 @@
         if (resource === stage1Cannon) return "Stage 1 Cannon Minion";
         if (resource === stage2Cannon) return "Stage 2 Cannon Minion";
         if (resource === stage3Cannon) return "Stage 3 Cannon Minion";
-        return "WIP";
+        if (resource === redBuff) return "Red Buff";
+        if (resource === blueBuff) return "Blue Buff";
+        if (resource === krugs) return "Krugs";
+        if (resource === raptors) return "Raptors";
+        if (resource === wolves) return "Wolves";
+        if (resource === gromp) return "Gromp";
+        return "unknown resource";
     }
 
     function getResourceAsset(resource: Resource): string {
@@ -206,6 +211,12 @@
         if (resource === stage1Cannon) return "minions/cannon.png";
         if (resource === stage2Cannon) return "minions/cannon.png";
         if (resource === stage3Cannon) return "minions/cannon.png";
+        if (resource === redBuff) return "camps/red.png";
+        if (resource === blueBuff) return "camps/blue.png";
+        if (resource === krugs) return "camps/krugs.png";
+        if (resource === raptors) return "camps/raptors.png";
+        if (resource === wolves) return "camps/wolves.png";
+        if (resource === gromp) return "camps/gromp.png";
         return "";
     }
 </script>
@@ -225,7 +236,7 @@
             </select>
         </div>
     </div>
-    <button class="active" on:click={fillCounts}>Fill Counts</button>
+    <button class="active" on:click={() => fillCountsUntil(gameTime)}>Fill Counts</button>
 </Section>
 
 <Section>
@@ -243,15 +254,9 @@
 </Section>
 
 <Section>
-    <div class="split">
-        <div>
-            <h2>Creep Score</h2>
-            <NumberSelector bind:value={creepScore} plusMinus={false} />
-        </div>
-        <div>
-            <h2>Creep Score Per Minute</h2>
-            <NumberSelector value={calculateCreepScorePerMinute(creepScore, gameTime)} plusMinus={false} />
-        </div>
+    <div>
+        <h2>Creep Score</h2>
+        <NumberSelector bind:value={creepScore} plusMinus={true} />
     </div>
     <div class="actual-gold-container">
         <div class="gold-container">
