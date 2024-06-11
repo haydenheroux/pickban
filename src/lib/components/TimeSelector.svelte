@@ -25,7 +25,7 @@
 
     .time {
         display: grid;
-        grid-template-columns: minmax(8rem, 1fr) min-content minmax(8rem, 1fr);
+        grid-template-columns: minmax(2rem, 1fr) min-content minmax(2rem, 1fr);
         gap: var(--section-gap);
     }
 </style>
