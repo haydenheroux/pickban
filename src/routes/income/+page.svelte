@@ -9,6 +9,9 @@
 
     let gameTime: Time = new Time();
 
+    let minions: Map<Resource, number>;
+    let camps: Map<Resource, number>;
+
     let isJungler: boolean = false;
 
     let minionsSlainPerMinute: number;
@@ -24,10 +27,8 @@
         minionsSlainPerMinute = calculateCreepScorePerMinute(creepScore, gameTime);
         campsSlainPerMinute = calculateCreepScorePerMinute(creepScore / 4, gameTime);
 
-        let minions = countMinionSpawnsUntil(gameTime);
-        let camps = countCampSpawnsUntil(gameTime);
-
-        console.log(camps);
+        minions = countMinionSpawnsUntil(gameTime);
+        camps = countCampSpawnsUntil(gameTime);
 
         minionEfficiency = coerce(creepScore / calculateCreepScore(minions));
         campEfficiency = coerce(creepScore / calculateCreepScore(camps));
@@ -162,7 +163,55 @@
 
         return campSpawnCounts;
     }
+
+    function getResourceName(resource: Resource): string {
+        if (resource === meleeMinion) return "Melee Minion";
+        if (resource === rangedMinion) return "Ranged Minion";
+        if (resource === stage1Cannon) return "Stage 1 Cannon Minion";
+        if (resource === stage2Cannon) return "Stage 2 Cannon Minion";
+        if (resource === stage3Cannon) return "Stage 3 Cannon Minion";
+        return "WIP";
+    }
+
+    function getResourceAsset(resource: Resource): string {
+        if (resource === meleeMinion) return "minions/melee.png";
+        if (resource === rangedMinion) return "minions/ranged.png";
+        if (resource === stage1Cannon) return "minions/cannon.png";
+        if (resource === stage2Cannon) return "minions/cannon.png";
+        if (resource === stage3Cannon) return "minions/cannon.png";
+        return "";
+    }
 </script>
+
+<Section>
+    <div>
+        <h2>Game Time</h2>
+        <TimeSelector bind:time={gameTime} />
+    </div>
+    <div>
+        <h2>Role</h2>
+        <BooleanSelector bind:value={isJungler} left={"Laner"} right={"Jungler"} />
+    </div>
+</Section>
+
+{#if !isJungler}
+    <Section>
+        <div>
+            <h2>Counts</h2>
+            {#each minions as [resource, number]}
+                {@const name=getResourceName(resource)}
+                <div class="resource-container">
+                    <img src={getResourceAsset(resource)} title={name} alt={name}>
+                    <NumberSelector bind:value={number} plusMinus={false} />
+                </div>
+            {/each}
+        </div>
+        <div class="gold-container">
+            <h2>{calculateGoldIncome(minions).toFixed()}</h2>
+            <img src="ui/gold.png" alt="Gold">
+        </div>
+    </Section>
+{/if}
 
 <Section>
     <div class="split">
@@ -171,48 +220,81 @@
             <NumberSelector bind:value={creepScore} plusMinus={false} />
         </div>
         <div>
-            <h2>Game Time</h2>
-            <TimeSelector bind:time={gameTime} />
+            {#if isJungler}
+                <h2>Jungle Camps Slain Per Minute</h2>
+                <NumberSelector value={campsSlainPerMinute} plusMinus={false} />
+            {:else}
+                <h2>Minions Slain Per Minute</h2>
+                <NumberSelector value={minionsSlainPerMinute} plusMinus={false} />
+            {/if}
         </div>
     </div>
-    <div>
-        <h2>Role</h2>
-        <BooleanSelector bind:value={isJungler} left={"Laner"} right={"Jungler"} />
+    <div class="actual-gold-container">
+        <div class="gold-container">
+            <h2>{calculateGoldIncome(minions).toFixed()}</h2>
+            <img src="ui/gold.png" alt="Gold">
+        </div>
+        <p>×</p>
+        {#if isJungler}
+            <h2>{(100 * campEfficiency).toFixed(2)}%</h2>
+        {:else}
+            <h2>{(100 * minionEfficiency).toFixed(2)}%</h2>
+        {/if}
+        <p>=</p>
+        <div class="gold-container">
+            <h2>{(calculateGoldIncome(minions) * minionEfficiency).toFixed()}</h2>
+            <img src="ui/gold.png" alt="Gold">
+        </div>
     </div>
 </Section>
-
-{#if isJungler}
-    <Section name={"Jungle Camps Slain Per Minute"}>
-        <h2>{campsSlainPerMinute.toFixed(2)}</h2>
-    </Section>
-{:else}
-    <Section name={"Minions Slain Per Minute"}>
-        <h2>{minionsSlainPerMinute.toFixed(2)}</h2>
-    </Section>
-{/if}
-
-{#if isJungler}
-    <Section name={"Jungle Camp Efficiency"}>
-        <h2>{(100 * campEfficiency).toFixed(2)}%</h2>
-    </Section>
-{:else}
-    <Section name={"Minion Efficiency"}>
-        <h2>{(100 * minionEfficiency).toFixed(2)}%</h2>
-    </Section>
-{/if}
-
-{#if isJungler}
-    <Section name={"Jungle Camp Gold Earned"}>
-        <h2>{campGoldEarned.toFixed()}</h2>
-    </Section>
-{:else}
-    <Section name={"Minion Gold Earned"}>
-        <h2>{minionGoldEarned.toFixed()}</h2>
-    </Section>
-{/if}
 
 <style>
     h2 {
         margin-bottom: 0.5rem;
+    }
+
+    .resource-container {
+        display: grid;
+        grid-template-columns: 4rem 1fr;
+        gap: var(--section-gap);
+    }
+
+    .resource-container img {
+        height: 3rem;
+        width: auto;
+        margin: auto;
+    }
+
+    .gold-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 4rem;
+    }
+
+    .gold-container * {
+        margin: auto;
+    }
+
+    .gold-container h2 {
+        text-align: center;
+    }
+
+    .gold-container img {
+        height: 1.5rem;
+        width: auto;
+    }
+
+    .actual-gold-container {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        align-items: center;
+        justify-content: center;
+        width: 24rem;
+        text-align: center;
+    }
+
+    .actual-gold-container h2 {
+        margin-bottom: 0;
     }
 </style>
