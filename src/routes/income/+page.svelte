@@ -313,6 +313,17 @@
         text-align: center;
     }
 
+    .actual-gold-container * {
+        margin: auto;
+    }
+
+    @media screen and (max-width: 40rem) {
+        .actual-gold-container {
+            grid-template-columns: 1fr;
+            grid-template-rows: repeat(5, 1fr);
+        }
+    }
+
     .actual-gold-container h2 {
         margin-bottom: 0;
     }
