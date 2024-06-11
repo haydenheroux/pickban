@@ -24,7 +24,7 @@
 
     onMount(clearResources);
 
-    function fillCountsUntil(time: Time) {
+    function fillResourcesUntil(time: Time) {
         let resources: Map<Resource, number> = new Map();
 
         if (selectedRole == "Jungler") {
@@ -46,7 +46,7 @@
     }
 
     function clearResources() {
-        fillCountsUntil(Time.minutes(0).seconds(0));
+        fillResourcesUntil(Time.minutes(0).seconds(0));
     }
 
     $: {
@@ -65,12 +65,6 @@
 
     function coerce(n: number) {
         return Number.isFinite(n) ? n : 0;
-    }
-
-    function calculateCreepScorePerMinute(creepsSlain: number, time: Time) {
-        const result = creepsSlain / time.totalMinutes;
-
-        return coerce(result);
     }
 
     interface Resource {
@@ -236,7 +230,10 @@
             </select>
         </div>
     </div>
-    <button class="active" on:click={() => fillCountsUntil(gameTime)}>Fill Counts</button>
+    <div class="split">
+        <button class="active" on:click={() => fillResourcesUntil(gameTime)}>Fill</button>
+        <button class="active" on:click={clearResources}>Clear</button>
+    </div>
 </Section>
 
 <Section>
@@ -253,11 +250,8 @@
     </div>
 </Section>
 
-<Section>
-    <div>
-        <h2>Creep Score</h2>
+<Section name={"Creep Score"}>
         <NumberSelector bind:value={creepScore} plusMinus={true} />
-    </div>
     <div class="actual-gold-container">
         <div class="gold-container">
             <h2>{expectedIncome.toFixed()}</h2>
