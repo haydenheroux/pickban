@@ -4,7 +4,7 @@
     export let time: Time = new Time();
 
     let minutesValue: string = "0";
-    let secondsValue: string = "00";
+    let secondsValue: string = "0";
 
     $: {
         time = time?.minutes(Number(minutesValue));
@@ -13,34 +13,12 @@
     $: {
         time = time?.seconds(Number(secondsValue));
     }
-
-    function format(event: Event) {
-        const target = event.target;
-
-        if (!target) return;
-
-        const input = target as HTMLInputElement;
-
-        const value = input.value;
-
-        let result;
-
-        if (value.length == 1) {
-            result = "0" + value;
-        } else if (value == "0") {
-            result = "00";
-        } else {
-            result = value;
-        }
-
-        input.value = result;
-    }
 </script>
 
 <div class="time">
     <input bind:value={minutesValue} type="number" min="0" max="59">
     <span>:</span>
-    <input bind:value={secondsValue} type="number" min="0" max="59" on:input={format}>
+    <input bind:value={secondsValue} type="number" min="0" max="59">
 </div>
 
 <style>
