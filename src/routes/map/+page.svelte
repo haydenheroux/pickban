@@ -1,98 +1,108 @@
 <script lang="ts">
-	import { map } from "$lib/data/assets";
-	import { getImageOrNull } from "$lib/data/data_dragon";
-	import { picks } from "$lib/data/stores";
-	import { onMount } from "svelte";
+	import { map } from '$lib/data/assets';
+	import { getImageOrNull } from '$lib/data/data_dragon';
+	import { picks } from '$lib/data/stores';
+	import { onMount } from 'svelte';
 
-    let imageOrNull: HTMLImageElement | null = null;
+	let imageOrNull: HTMLImageElement | null = null;
 
-    let canvasOrNull: HTMLCanvasElement | null;
+	let canvasOrNull: HTMLCanvasElement | null;
 
-    onMount(() => {
-            imageOrNull = new Image();
-            imageOrNull.src = map;
-            imageOrNull.onload = () => {
-                if (!canvasOrNull) return;
-                if (!imageOrNull) return;
+	onMount(() => {
+		imageOrNull = new Image();
+		imageOrNull.src = map;
+		imageOrNull.onload = () => {
+			if (!canvasOrNull) return;
+			if (!imageOrNull) return;
 
-                canvasOrNull.width = canvasOrNull.offsetWidth;
-                canvasOrNull.height = canvasOrNull.offsetWidth * (imageOrNull.height / imageOrNull.width);
-                draw();
-            };
-        });
+			canvasOrNull.width = canvasOrNull.offsetWidth;
+			canvasOrNull.height = canvasOrNull.offsetWidth * (imageOrNull.height / imageOrNull.width);
+			draw();
+		};
+	});
 
-    let point = {x: 0, y: 0} as Point;
+	let point = { x: 0, y: 0 } as Point;
 
-    function draw() {
+	function draw() {
 		if (!canvasOrNull) return;
 		if (!imageOrNull) return;
 
 		const ctxOrNull = canvasOrNull.getContext('2d');
 		if (!ctxOrNull) return;
-		
-        ctxOrNull.drawImage(imageOrNull, 0, 0, canvasOrNull.width, canvasOrNull.height);
-        
-        for (let redPick of picks.get().red) {
-            if (redPick) {
-                drawChampion(redPick, point, canvasOrNull);
-            }
-        }
 
-        for (let bluePick of picks.get().blue) {
-            if (bluePick) {
-                drawChampion(bluePick, point, canvasOrNull);
-            }
-        }
-    }
+		ctxOrNull.drawImage(imageOrNull, 0, 0, canvasOrNull.width, canvasOrNull.height);
 
-    type CanvasClickEvent = MouseEvent & {currentTarget: HTMLCanvasElement};
+		for (let redPick of picks.get().red) {
+			if (redPick) {
+				drawChampion(redPick, point, canvasOrNull);
+			}
+		}
 
-    type Point = {
-        x: number;
-        y: number;
-    };
+		for (let bluePick of picks.get().blue) {
+			if (bluePick) {
+				drawChampion(bluePick, point, canvasOrNull);
+			}
+		}
+	}
 
-    function toPoint(click: CanvasClickEvent): Point {
-        const width = click.currentTarget?.width;
-        const height = click.currentTarget?.height;
+	type CanvasClickEvent = MouseEvent & { currentTarget: HTMLCanvasElement };
 
-        let point = {
-            x: click.offsetX / width,
-            y: click.offsetY / height
-        }
+	type Point = {
+		x: number;
+		y: number;
+	};
 
-        return point;
-    }
+	function toPoint(click: CanvasClickEvent): Point {
+		const width = click.currentTarget?.width;
+		const height = click.currentTarget?.height;
 
-    function drawChampion(championIDOrNull: string | null, point: Point, canvas: HTMLCanvasElement) {
-        let image = getImageOrNull(championIDOrNull)!!;
+		let point = {
+			x: click.offsetX / width,
+			y: click.offsetY / height
+		};
 
-        let position: Point = {
-            x: point.x * canvas.width,
-            y: point.y * canvas.height
-        };
+		return point;
+	}
 
-        const cropPercent = 0.1;
-        const portraitSize = 120;  
+	function drawChampion(championIDOrNull: string | null, point: Point, canvas: HTMLCanvasElement) {
+		let image = getImageOrNull(championIDOrNull)!!;
 
-        const cropAmount = portraitSize * cropPercent;
-        const cropSize = portraitSize - 2 * cropAmount;
+		let position: Point = {
+			x: point.x * canvas.width,
+			y: point.y * canvas.height
+		};
 
-        const drawSize = 64;
+		const cropPercent = 0.1;
+		const portraitSize = 120;
+
+		const cropAmount = portraitSize * cropPercent;
+		const cropSize = portraitSize - 2 * cropAmount;
+
+		const drawSize = 64;
 
 		const ctxOrNull = canvas.getContext('2d');
 		if (!ctxOrNull) return;
 
-        ctxOrNull.drawImage(image, cropAmount, cropAmount, cropSize, cropSize, position.x - drawSize / 2, position.y - drawSize / 2, drawSize, drawSize);
-    }
+		ctxOrNull.drawImage(
+			image,
+			cropAmount,
+			cropAmount,
+			cropSize,
+			cropSize,
+			position.x - drawSize / 2,
+			position.y - drawSize / 2,
+			drawSize,
+			drawSize
+		);
+	}
 
-    function handle(click: CanvasClickEvent) {
-        point = toPoint(click);
+	function handle(click: CanvasClickEvent) {
+		point = toPoint(click);
 
-        draw();
-    }
+		draw();
+	}
 </script>
 
 <section>
-    <canvas bind:this={canvasOrNull} on:click={handle} />
+	<canvas bind:this={canvasOrNull} on:click={handle} />
 </section>

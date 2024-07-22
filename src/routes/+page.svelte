@@ -1,9 +1,15 @@
 <script lang="ts">
-	import ChampionFrame from "$lib/components/ChampionFrame.svelte";
-	import { colors, lanes, close } from "$lib/data/assets";
-	import { allChampionIDs } from "$lib/data/data_dragon";
-	import { Color, Lane, lanes as lanesStore, colors as colorsStore, picks as picksStore } from "$lib/data/stores";
-	import { Selector } from "$lib/util/selector";
+	import ChampionFrame from '$lib/components/ChampionFrame.svelte';
+	import { colors, lanes, close } from '$lib/data/assets';
+	import { allChampionIDs } from '$lib/data/data_dragon';
+	import {
+		Color,
+		Lane,
+		lanes as lanesStore,
+		colors as colorsStore,
+		picks as picksStore
+	} from '$lib/data/stores';
+	import { Selector } from '$lib/util/selector';
 
 	let previousMessageOrNull: any | null = null;
 	let selectedChampionIDOrNull: string | null = null;
@@ -56,13 +62,18 @@
 
 	function updateSelected() {
 		for (let championID of allChampionIDs) {
-			selectedMap["frame" + championID] = selectedLocationOrNull == "frame" && selectedChampionIDOrNull == championID;
+			selectedMap['frame' + championID] =
+				selectedLocationOrNull == 'frame' && selectedChampionIDOrNull == championID;
 		}
 		for (let i = 0; i < 5; i++) {
-			selectedMap["blueBan" + i] = selectedLocationOrNull == "blueBan" + i && selectedChampionIDOrNull != null;
-			selectedMap["redBan" + i] = selectedLocationOrNull == "redBan" + i && selectedChampionIDOrNull != null;
-			selectedMap["bluePick" + i] = selectedLocationOrNull == "bluePick" + i && selectedChampionIDOrNull != null;
-			selectedMap["redPick" + i] = selectedLocationOrNull == "redPick" + i && selectedChampionIDOrNull != null;
+			selectedMap['blueBan' + i] =
+				selectedLocationOrNull == 'blueBan' + i && selectedChampionIDOrNull != null;
+			selectedMap['redBan' + i] =
+				selectedLocationOrNull == 'redBan' + i && selectedChampionIDOrNull != null;
+			selectedMap['bluePick' + i] =
+				selectedLocationOrNull == 'bluePick' + i && selectedChampionIDOrNull != null;
+			selectedMap['redPick' + i] =
+				selectedLocationOrNull == 'redPick' + i && selectedChampionIDOrNull != null;
 		}
 	}
 
@@ -72,7 +83,11 @@
 	function updateDisabled() {
 		for (let championID of allChampionIDs) {
 			// @ts-ignore
-			disabledMap["frame" + championID] = blueBans.includes(championID) || redBans.includes(championID) || picks.blue.includes(championID) || picks.red.includes(championID);
+			disabledMap['frame' + championID] =
+				blueBans.includes(championID) ||
+				redBans.includes(championID) ||
+				picks.blue.includes(championID) ||
+				picks.red.includes(championID);
 		}
 	}
 
@@ -95,7 +110,7 @@
 		const lanePredicate = lanesStore.predicate(laneSelector.selected);
 		const colorPredicate = colorsStore.predicate(colorSelector.selected);
 
-		championIDs = allChampionIDs.filter(id => lanePredicate(id) && colorPredicate(id));
+		championIDs = allChampionIDs.filter((id) => lanePredicate(id) && colorPredicate(id));
 	}
 
 	function clearPickBan(_event: any) {
@@ -108,20 +123,36 @@
 
 		updateSelected();
 		updateDisabled();
-		
+
 		// TODO Clear selectedOrNull?
 	}
 </script>
 
 <div class="bans-container">
 	<div class="bans">
-		{#each Array(5) as _, i }
-			<ChampionFrame bind:championID={blueBans[i]} on:message={handle} struck={true} gap={i == 2} settable={true} location={"blueBan" + i} bind:selected={selectedMap["blueBan" + i]} />
+		{#each Array(5) as _, i}
+			<ChampionFrame
+				bind:championID={blueBans[i]}
+				on:message={handle}
+				struck={true}
+				gap={i == 2}
+				settable={true}
+				location={'blueBan' + i}
+				bind:selected={selectedMap['blueBan' + i]}
+			/>
 		{/each}
 	</div>
 	<div class="bans">
-		{#each Array(5) as _, i }
-			<ChampionFrame bind:championID={redBans[i]} on:message={handle} struck={true} gap={i == 1} settable={true} location={"redBan" + i} bind:selected={selectedMap["redBan" + i]} />
+		{#each Array(5) as _, i}
+			<ChampionFrame
+				bind:championID={redBans[i]}
+				on:message={handle}
+				struck={true}
+				gap={i == 1}
+				settable={true}
+				location={'redBan' + i}
+				bind:selected={selectedMap['redBan' + i]}
+			/>
 		{/each}
 	</div>
 </div>
@@ -130,50 +161,78 @@
 	<div class="picks">
 		{#each Array(5) as _, i}
 			<div>
-				<h2 class="blue {selectedMap["bluePick" + i] ? "gold" : ""}">B{i + 1}</h2>
-				<ChampionFrame bind:championID={picks.blue[i]} on:message={handle} settable={true} big={true} location={"bluePick" + i} bind:selected={selectedMap["bluePick" + i]} />
+				<h2 class="blue {selectedMap['bluePick' + i] ? 'gold' : ''}">B{i + 1}</h2>
+				<ChampionFrame
+					bind:championID={picks.blue[i]}
+					on:message={handle}
+					settable={true}
+					big={true}
+					location={'bluePick' + i}
+					bind:selected={selectedMap['bluePick' + i]}
+				/>
 			</div>
 		{/each}
 	</div>
 	<div class="picker">
 		<div class="bar">
 			<div class="filter">
-				{#each lanes as {lane, src}}
+				{#each lanes as { lane, src }}
 					<!-- svelte-ignore a11y-missing-attribute -->
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-					<img {src} class="{laneSelector.selected == lane ? "selected" : ""}" on:click={() => laneSelector.select(lane)}>
+					<img
+						{src}
+						class={laneSelector.selected == lane ? 'selected' : ''}
+						on:click={() => laneSelector.select(lane)}
+					/>
 				{/each}
-				{#each colors as {color, src}}
+				{#each colors as { color, src }}
 					<!-- svelte-ignore a11y-missing-attribute -->
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-					<img {src} class="color {colorSelector.selected == color ? "selected" : ""}" on:click={() => colorSelector.select(color)}>
+					<img
+						{src}
+						class="color {colorSelector.selected == color ? 'selected' : ''}"
+						on:click={() => colorSelector.select(color)}
+					/>
 				{/each}
 			</div>
 			<div class="options">
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
 				<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 				<!-- svelte-ignore a11y-missing-attribute -->
-				<img src={close} on:click={clearPickBan}>
+				<img src={close} on:click={clearPickBan} />
 			</div>
 		</div>
 		<div class="palette">
 			{#each championIDs as championID}
-				<ChampionFrame {championID} on:message={handle} showName={true} location={"frame"} bind:selected={selectedMap["frame" + championID]} bind:disabled={disabledMap["frame" + championID]} />
+				<ChampionFrame
+					{championID}
+					on:message={handle}
+					showName={true}
+					location={'frame'}
+					bind:selected={selectedMap['frame' + championID]}
+					bind:disabled={disabledMap['frame' + championID]}
+				/>
 			{/each}
 		</div>
 	</div>
 	<div class="picks">
 		{#each Array(5) as _, i}
 			<div>
-				<ChampionFrame bind:championID={picks.red[i]} on:message={handle} settable={true} big={true} location={"redPick" + i} bind:selected={selectedMap["redPick" + i]} />
-				<h2 class="red {selectedMap["redPick" + i] ? "gold" : ""}">R{i + 1}</h2>
+				<ChampionFrame
+					bind:championID={picks.red[i]}
+					on:message={handle}
+					settable={true}
+					big={true}
+					location={'redPick' + i}
+					bind:selected={selectedMap['redPick' + i]}
+				/>
+				<h2 class="red {selectedMap['redPick' + i] ? 'gold' : ''}">R{i + 1}</h2>
 			</div>
 		{/each}
 	</div>
 </div>
-
 
 <style>
 	.bans-container {
@@ -244,9 +303,10 @@
 
 	.picker .bar img.color {
 		filter: none;
-	} 
+	}
 
-	.picker .bar img.selected, .picker .bar img:hover {
+	.picker .bar img.selected,
+	.picker .bar img:hover {
 		filter: grayscale() brightness(200%);
 	}
 

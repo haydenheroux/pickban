@@ -1,103 +1,107 @@
 <script lang="ts">
-	import { getChampionNameOrNull } from "$lib/data/data_dragon";
-	import { hideContextMenus } from "$lib/data/stores";
-	import { createEventDispatcher } from "svelte";
-	import ChampionContextMenu from "./ChampionContextMenu.svelte";
-	import ChampionPortrait from "./ChampionPortrait.svelte";
-	import ChampionName from "./ChampionName.svelte";
+	import { getChampionNameOrNull } from '$lib/data/data_dragon';
+	import { hideContextMenus } from '$lib/data/stores';
+	import { createEventDispatcher } from 'svelte';
+	import ChampionContextMenu from './ChampionContextMenu.svelte';
+	import ChampionPortrait from './ChampionPortrait.svelte';
+	import ChampionName from './ChampionName.svelte';
 
-    export let big: boolean = false;
-    export let struck: boolean = false;
-    export let showName: boolean = false;
-    export let settable: boolean = false;
-    export let gap: boolean = false;
+	export let big: boolean = false;
+	export let struck: boolean = false;
+	export let showName: boolean = false;
+	export let settable: boolean = false;
+	export let gap: boolean = false;
 
-    export let disabled: boolean = false;
-    export let selected: boolean = false;
+	export let disabled: boolean = false;
+	export let selected: boolean = false;
 
-    const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher();
 
-    function onClick() {
-        if (disabled) return;
+	function onClick() {
+		if (disabled) return;
 
-        dispatch("message", {
-            championID: championID,
-            location: location,
-            settable: settable,
-            setChampionID: (newChampionID: string | null) => {
-                if (settable) {
-                    championID = newChampionID;
-                }
-            }
-        });
-    }
+		dispatch('message', {
+			championID: championID,
+			location: location,
+			settable: settable,
+			setChampionID: (newChampionID: string | null) => {
+				if (settable) {
+					championID = newChampionID;
+				}
+			}
+		});
+	}
 
-    export let championID: string | null = null;
-    export let location: string;
+	export let championID: string | null = null;
+	export let location: string;
 
-    let name: string;
+	let name: string;
 
-    $: name = getChampionNameOrNull(championID);
+	$: name = getChampionNameOrNull(championID);
 
-    let menu = {x: 0, y: 0};
+	let menu = { x: 0, y: 0 };
 
-    let showContextMenu: boolean = false;
+	let showContextMenu: boolean = false;
 
-    hideContextMenus.onTrigger(() => {
-        showContextMenu = false;
-    });
+	hideContextMenus.onTrigger(() => {
+		showContextMenu = false;
+	});
 
-    function openContextMenu(event: any) {
-        hideContextMenus.trigger();
+	function openContextMenu(event: any) {
+		hideContextMenus.trigger();
 
-        showContextMenu = true;
+		showContextMenu = true;
 
-        menu.x = event.pageX;
-        menu.y = event.pageY;
-    }
+		menu.x = event.pageX;
+		menu.y = event.pageY;
+	}
 
-    function closeContextMenu() {
-        showContextMenu = false;
-    }
+	function closeContextMenu() {
+		showContextMenu = false;
+	}
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="{big ? "big" : ""} {disabled ? "disabled" : ""} {gap ? "gap" : ""}" on:contextmenu|preventDefault={openContextMenu} on:click|preventDefault={onClick}>
-    <ChampionPortrait {championID} {selected} {disabled} {struck}/>
-    {#if showName}
-        <ChampionName {championID} {selected} {disabled} />
-    {/if}
+<div
+	class="{big ? 'big' : ''} {disabled ? 'disabled' : ''} {gap ? 'gap' : ''}"
+	on:contextmenu|preventDefault={openContextMenu}
+	on:click|preventDefault={onClick}
+>
+	<ChampionPortrait {championID} {selected} {disabled} {struck} />
+	{#if showName}
+		<ChampionName {championID} {selected} {disabled} />
+	{/if}
 </div>
 
 {#if showContextMenu}
-    <ChampionContextMenu {championID} x={menu.x} y={menu.y}/>
+	<ChampionContextMenu {championID} x={menu.x} y={menu.y} />
 {/if}
 
-<svelte:window on:click={closeContextMenu} on:message={() => showContextMenu = false}/>
+<svelte:window on:click={closeContextMenu} on:message={() => (showContextMenu = false)} />
 
 <style>
-    div {
-        width: 5rem;
+	div {
+		width: 5rem;
 
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.5rem;
 
-        cursor: pointer;
-    }
+		cursor: pointer;
+	}
 
-    div.disabled {
-        cursor: default;
-    }
+	div.disabled {
+		cursor: default;
+	}
 
-    div.big {
-        width: 7rem;
-    }
+	div.big {
+		width: 7rem;
+	}
 
-    div.gap {
-        /* TODO Check if 1x or 2x looks better */
-        margin-right: calc(1 * var(--section-gap));
-    }
+	div.gap {
+		/* TODO Check if 1x or 2x looks better */
+		margin-right: calc(1 * var(--section-gap));
+	}
 </style>

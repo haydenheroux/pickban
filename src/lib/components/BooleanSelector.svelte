@@ -1,8 +1,8 @@
 <script lang="ts">
 	export let value: boolean = false;
 
-	export let left: string = "No";
-	export let right: string = "Yes";
+	export let left: string = 'No';
+	export let right: string = 'Yes';
 </script>
 
 <div class="split">

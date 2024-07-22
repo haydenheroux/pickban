@@ -1,6 +1,6 @@
 <script lang="ts">
-	export let name: string = "";
-	export let help: string = "";
+	export let name: string = '';
+	export let help: string = '';
 </script>
 
 <section>
