@@ -3,6 +3,7 @@
 	import { colors, lanes, close } from "$lib/data/assets";
 	import { allChampionIDs } from "$lib/data/data_dragon";
 	import { Color, Lane, lanes as lanesStore, colors as colorsStore, picks as picksStore } from "$lib/data/stores";
+	import { trigger, type Trigger } from "$lib/util/trigger";
 
 	let previousMessageOrNull: any | null = null;
 	let selectedChampionIDOrNull: string | null = null;
@@ -75,38 +76,39 @@
 		}
 	}
 
-	let laneFilterOrNull: Lane | null = null;
+	class Selection<T> {
+		selected: T | null = null;
+		trigger: Trigger;
 
-	function toggleLaneFilter(lane: Lane) {
-		if (laneFilterOrNull != lane) {
-			laneFilterOrNull = lane;
-		} else {
-			laneFilterOrNull = null;
+		constructor(...callbacks: Array<() => void>) {
+			this.trigger = trigger();
+
+			for (const callback of callbacks) {
+				this.trigger.onTrigger(callback);
+			}
 		}
+	
+		select(value: T) {
+			if (this.selected != value) {
+				this.selected = value;
+			} else {
+				this.selected = null;
+			}
 
-		updateChampionFilter();
-		updateLaneFilterMap();
+			this.trigger.trigger();
+		}
 	}
 
-	let colorFilterOrNull: Color | null = null;
+	const selectedLane = new Selection<Lane>(updateChampionFilter, updateLaneFilterMap);
 
-	function toggleColorFilter(color: Color) {
-		if (colorFilterOrNull != color) {
-			colorFilterOrNull = color;
-		} else {
-			colorFilterOrNull = null;
-		}
-
-		updateChampionFilter();
-		updateColorFilterMap();
-	}
+	const selectedColor = new Selection<Color>(updateChampionFilter, updateColorFilterMap);
 
 	let championIDs = allChampionIDs;
 	updateChampionFilter();
 
 	function updateChampionFilter() {
-		const lanePredicate = lanesStore.predicate(laneFilterOrNull);
-		const colorPredicate = colorsStore.predicate(colorFilterOrNull);
+		const lanePredicate = lanesStore.predicate(selectedLane.selected);
+		const colorPredicate = colorsStore.predicate(selectedColor.selected);
 
 		championIDs = allChampionIDs.filter(id => lanePredicate(id) && colorPredicate(id));
 	}
@@ -115,21 +117,21 @@
 
 	colorsStore.callback(updateChampionFilter);
 
-	let laneFilterMap: Record<string, boolean> = {};
+	const laneFilterMap: Record<string, boolean> = {};
 	updateLaneFilterMap();
 
 	function updateLaneFilterMap() {
-		for (let lane of lanes) {
-			laneFilterMap[lane.lane] = laneFilterOrNull == lane.lane;
+		for (const lane of lanes) {
+			laneFilterMap[lane.lane] = selectedLane.selected == lane.lane;
 		}
 	} 
 
-	let colorFilterMap: Record<string, boolean> = {};
+	const colorFilterMap: Record<string, boolean> = {};
 	updateColorFilterMap();
 
 	function updateColorFilterMap() {
-		for (let color of colors) {
-			colorFilterMap[color.color] = colorFilterOrNull == color.color;
+		for (const color of colors) {
+			colorFilterMap[color.color] = selectedColor.selected == color.color;
 		}
 	} 
 
@@ -177,13 +179,13 @@
 					<!-- svelte-ignore a11y-missing-attribute -->
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-					<img {src} class="{laneFilterMap[lane] ? "selected" : ""}" on:click={() => toggleLaneFilter(lane)}>
+					<img {src} class="{laneFilterMap[lane] ? "selected" : ""}" on:click={() => selectedLane.select(lane)}>
 				{/each}
 				{#each colors as {color, src}}
 					<!-- svelte-ignore a11y-missing-attribute -->
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-					<img {src} class="color {colorFilterMap[color] ? "selected" : ""}" on:click={() => toggleColorFilter(color)}>
+					<img {src} class="color {colorFilterMap[color] ? "selected" : ""}" on:click={() => selectedColor.select(color)}>
 				{/each}
 			</div>
 			<div class="options">
