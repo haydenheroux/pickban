@@ -19,7 +19,8 @@ export enum Color {
 	Green = 'Green',
 	Blue = 'Blue',
 	White = 'White',
-	Black = 'Black'
+	Black = 'Black',
+	Colorless = 'Colorless'
 }
 
 export const colors = new Filter<Color, ChampionID>('colors');

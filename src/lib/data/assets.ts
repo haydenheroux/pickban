@@ -13,7 +13,8 @@ export const colors = [
 	{ color: Color.Green, src: 'colors/green.svg' },
 	{ color: Color.Blue, src: 'colors/blue.svg' },
 	{ color: Color.White, src: 'colors/white.svg' },
-	{ color: Color.Black, src: 'colors/black.svg' }
+	{ color: Color.Black, src: 'colors/black.svg' },
+	{ color: Color.Colorless, src: 'colors/colorless.svg' }
 ];
 
 export const types = [
