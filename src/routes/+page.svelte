@@ -197,6 +197,7 @@
 						on:click={() => laneSelector.select(lane)}
 					/>
 				{/each}
+				<div class="separator"></div>
 				{#each types as { type, src }}
 					<!-- svelte-ignore a11y-missing-attribute -->
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -207,6 +208,7 @@
 						on:click={() => typeSelector.select(type)}
 					/>
 				{/each}
+				<div class="separator"></div>
 				{#each colors as { color, src }}
 					<!-- svelte-ignore a11y-missing-attribute -->
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -335,6 +337,16 @@
 		display: flex;
 		flex-direction: row;
 		gap: 0.25rem;
+	}
+
+	.picker .bar .filter .separator {
+		border-left: 1px solid var(--clr-neutral-800);
+		border-radius: var(--radius-element);
+
+		height: 85%;
+
+		margin-inline: 0.5rem;
+		margin-block: auto;
 	}
 
 	.palette {
