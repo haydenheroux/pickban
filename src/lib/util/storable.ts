@@ -1,7 +1,14 @@
 import { browser } from '$app/environment';
 import { writable, type Subscriber } from 'svelte/store';
 
-export function storable<T>(key: string, fallback: T) {
+export interface Storable<T> {
+	get: () => T;
+	set: (value: T) => void;
+	clear: () => void;
+	subscribe: (subscriber: Subscriber<T>) => void;
+}
+
+export function storable<T>(key: string, fallback: T): Storable<T> {
 	const store = writable(fallback);
 
 	if (browser) {

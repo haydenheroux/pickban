@@ -1,4 +1,9 @@
-export function trigger() {
+export interface Trigger {
+    onTrigger: (callback: () => void) => void;
+    trigger: () => void;
+}
+
+export function trigger(): Trigger {
     const callbacks: Array<() => void> = [] as Array<() => void>;
 
     return {

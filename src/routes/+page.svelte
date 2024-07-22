@@ -2,7 +2,7 @@
 	import ChampionFrame from "$lib/components/ChampionFrame.svelte";
 	import { colors, lanes, close } from "$lib/data/assets";
 	import { allChampionIDs } from "$lib/data/data_dragon";
-	import { Color, Lane, isColor, isLane, refreshColors, refreshLanes, picks as picksStore } from "$lib/data/stores";
+	import { Color, Lane, lanes as lanesStore, colors as colorsStore, picks as picksStore } from "$lib/data/stores";
 
 	let previousMessageOrNull: any | null = null;
 	let selectedChampionIDOrNull: string | null = null;
@@ -111,7 +111,7 @@
 			return (_lane, _championIDOrNull) => true;
 		}
 
-		return (lane, championIDOrNull) => isLane(lane, championIDOrNull);
+		return (lane, championIDOrNull) => lanesStore.matches(championIDOrNull, lane);
 	}
 
 	type ColorPredicate = (color: Color | null, championIDOrNull: string | null) => boolean;
@@ -121,7 +121,7 @@
 			return (_color, _championIDOrNull) => true;
 		}
 
-		return (color, championIDOrNull) => isColor(color, championIDOrNull);
+		return (color, championIDOrNull) => colorsStore.matches(championIDOrNull, color);
 	}
 
 	function updateChampionFilter() {
@@ -131,11 +131,11 @@
 		championIDs = allChampionIDs.filter(championID => laneFilterPredicate(laneFilterOrNull, championID) && colorFilterPredicate(colorFilterOrNull, championID));
 	}
 
-	refreshLanes.onTrigger(() => {
+	lanesStore.onUpdate(() => {
 		updateChampionFilter();
 	});
 
-	refreshColors.onTrigger(() => {
+	colorsStore.onUpdate(() => {
 		updateChampionFilter();
 	});
 

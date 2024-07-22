@@ -1,5 +1,67 @@
-import { trigger } from "$lib/util/trigger";
-import { storable } from "$lib/util/storable";
+import { trigger, type Trigger } from "$lib/util/trigger";
+import { storable, type Storable } from "$lib/util/storable";
+
+type ChampionID = string;
+
+class Filter<T extends string | number | symbol> {
+    store: Storable<Record<T, Array<ChampionID>>>;
+    refresh: Trigger;
+
+    constructor(name: string) {
+        this.store = storable<Record<T, Array<ChampionID>>>(name, {} as Record<T, Array<ChampionID>>);
+        this.refresh = trigger();
+    }
+
+    matches(id: ChampionID | null, value: T | null): boolean {
+        if (id == null || value == null) return false;
+
+        const associations = this.store.get();
+
+        const matchingIDs = new Set(associations[value]);
+
+        return matchingIDs.has(id);
+    }
+
+    associate(id: ChampionID | null, value: T) {
+        if (id == null) return;
+
+        const associations = this.store.get();
+
+        const matchingIDs = new Set(associations[value]);
+
+        if (matchingIDs.has(id) == false) {
+            matchingIDs.add(id);
+        }
+
+        associations[value] = [...matchingIDs];
+
+        this.store.set(associations);
+
+        this.refresh.trigger();
+    }
+
+    dissociate(id: ChampionID | null, value: T) {
+        if (id == null) return;
+
+        const associations = this.store.get();
+
+        const matchingIDs = new Set(associations[value]);
+
+        if (matchingIDs.has(id)) {
+            matchingIDs.delete(id);
+        }
+
+        associations[value] = [...matchingIDs];
+
+        this.store.set(associations);
+
+        this.refresh.trigger();
+    }
+
+    onUpdate(callback: () => void) {
+        this.refresh.onTrigger(callback);
+    }
+}
 
 export enum Lane {
     Top = "Top",
@@ -9,55 +71,7 @@ export enum Lane {
     Support = "Support"
 } 
 
-export const lanes = storable<Record<Lane, Array<string>>>("lanes", {} as Record<Lane, Array<string>>);
-
-export function isLane(laneOrNull: Lane | null, championIDOrNull: string | null): boolean {
-    if (laneOrNull == null || championIDOrNull == null) return false;
-
-    const favoritesObject = lanes.get();
-
-    const laneFavorites = new Set(favoritesObject[laneOrNull]);
-
-    return laneFavorites.has(championIDOrNull);
-}
-
-export function addLane(lane: Lane, championIDOrNull: string | null) {
-    if (championIDOrNull == null) return;
-
-    const favoritesObject = lanes.get();
-
-    const laneFavorites = new Set(favoritesObject[lane]);
-
-    if (!laneFavorites.has(championIDOrNull)) {
-        laneFavorites.add(championIDOrNull);
-    }
-
-    favoritesObject[lane] = [...laneFavorites];
-
-    lanes.set(favoritesObject);
-
-    refreshLanes.trigger();
-}
-
-export function removeLane(lane: Lane, championIDOrNull: string | null) {
-    if (championIDOrNull == null) return;
-
-    const favoritesObject = lanes.get();
-
-    const laneFavorites = new Set(favoritesObject[lane]);
-
-    if (laneFavorites.has(championIDOrNull)) {
-        laneFavorites.delete(championIDOrNull);
-    }
-
-    favoritesObject[lane] = [...laneFavorites];
-
-    lanes.set(favoritesObject);
-
-    refreshLanes.trigger();
-}
-
-export const refreshLanes = trigger();
+export const lanes = new Filter<Lane>("lanes");
 
 export enum Color {
     Red = "Red",
@@ -67,55 +81,7 @@ export enum Color {
     Black = "Black"
 }
 
-export const colors = storable<Record<Color, Array<string>>>("colors", {} as Record<Color, Array<string>>)
-
-export function isColor(colorOrNull: Color | null, championIDOrNull: string | null): boolean {
-    if (colorOrNull == null || championIDOrNull == null) return false;
-
-    const colorsObject = colors.get();
-
-    const colorColors = new Set(colorsObject[colorOrNull]);
-
-    return colorColors.has(championIDOrNull);
-}
-
-export function addColor(color: Color, championIDOrNull: string | null) {
-    if (championIDOrNull == null) return;
-
-    const colorsObject = colors.get();
-
-    const colorColors = new Set(colorsObject[color]);
-
-    if (!colorColors.has(championIDOrNull)) {
-        colorColors.add(championIDOrNull);
-    }
-
-    colorsObject[color] = [...colorColors];
-
-    colors.set(colorsObject);
-
-    refreshColors.trigger();
-}
-
-export function removeColor(color: Color, championIDOrNull: string | null) {
-    if (championIDOrNull == null) return;
-
-    const colorsObject = colors.get();
-
-    const colorColors = new Set(colorsObject[color]);
-
-    if (colorColors.has(championIDOrNull)) {
-        colorColors.delete(championIDOrNull);
-    }
-
-    colorsObject[color] = [...colorColors];
-
-    colors.set(colorsObject);
-
-    refreshColors.trigger();
-}
-
-export const refreshColors = trigger();
+export const colors = new Filter<Color>("colors");
 
 export const hideContextMenus = trigger();
 

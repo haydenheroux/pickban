@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { colors, lanes } from "$lib/data/assets";
 	import { getChampionNameOrNull } from "$lib/data/data_dragon";
-	import { Color, Lane, addColor, addLane, isColor, isLane, removeColor, removeLane } from "$lib/data/stores";
+	import { Color, Lane, colors as colorStore, lanes as laneStore } from "$lib/data/stores";
     export let championID: string | null = null;
 
     export let x: number;
@@ -16,11 +16,11 @@
     <ul>
         <li><p>{name ? name : ""}</p></li>
         {#each lanes as {lane, src}}
-            {#if isLane(lane, championID)}
+            {#if laneStore.matches(championID, lane)}
                 <li>
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <!-- svelte-ignore a11y-no-static-element-interactions -->
-                    <div on:click={() => removeLane(lane, championID)}>
+                    <div on:click={() => laneStore.dissociate(championID, lane)}>
                         <!-- svelte-ignore a11y-missing-attribute -->
                         <img {src}>
                         <button>Remove {lane}</button>
@@ -30,7 +30,7 @@
                 <li>
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <!-- svelte-ignore a11y-no-static-element-interactions -->
-                    <div on:click={() => addLane(lane, championID)}>
+                    <div on:click={() => laneStore.associate(championID, lane)}>
                         <!-- svelte-ignore a11y-missing-attribute -->
                         <img {src}>
                         <button>Add {lane}</button>
@@ -39,11 +39,11 @@
             {/if}
         {/each}
         {#each colors as {color, src}}
-            {#if isColor(color, championID)}
+            {#if colorStore.matches(championID, color)}
                 <li>
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <!-- svelte-ignore a11y-no-static-element-interactions -->
-                    <div on:click={() => removeColor(color, championID)}>
+                    <div on:click={() => colorStore.dissociate(championID, color)}>
                         <!-- svelte-ignore a11y-missing-attribute -->
                         <img class="color" {src}>
                         <button>Remove {color}</button>
@@ -53,7 +53,7 @@
                 <li>
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <!-- svelte-ignore a11y-no-static-element-interactions -->
-                    <div on:click={() => addColor(color, championID)}>
+                    <div on:click={() => colorStore.associate(championID, color)}>
                         <!-- svelte-ignore a11y-missing-attribute -->
                         <img class="color" {src}>
                         <button>Add {color}</button>
