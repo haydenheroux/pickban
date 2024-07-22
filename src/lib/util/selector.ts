@@ -1,15 +1,19 @@
 import { trigger, type Trigger } from "./trigger";
 
-export class Selection<T> {
+export class Selector<T extends string | number | symbol> {
     selected: T | null = null;
     trigger: Trigger;
 
-    constructor(...callbacks: Array<() => void>) {
+    constructor() {
         this.trigger = trigger();
+    }
 
-        for (const callback of callbacks) {
-            this.trigger.onTrigger(callback);
-        }
+    callback(callback: () => void) {
+        this.trigger.onTrigger(callback);
+    }
+
+    get(): T | null {
+        return this.selected;
     }
 
     select(value: T) {

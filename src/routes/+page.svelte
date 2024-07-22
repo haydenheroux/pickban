@@ -3,7 +3,7 @@
 	import { colors, lanes, close } from "$lib/data/assets";
 	import { allChampionIDs } from "$lib/data/data_dragon";
 	import { Color, Lane, lanes as lanesStore, colors as colorsStore, picks as picksStore } from "$lib/data/stores";
-	import { Selection as Selector } from "$lib/util/selector";
+	import { Selector } from "$lib/util/selector";
 
 	let previousMessageOrNull: any | null = null;
 	let selectedChampionIDOrNull: string | null = null;
@@ -76,31 +76,17 @@
 		}
 	}
 
-	const laneSelector = new Selector<Lane>(updateChampionIDs, updateLaneMap);
+	const laneSelector = new Selector<Lane>();
+
+	laneSelector.callback(updateChampionIDs);
 
 	lanesStore.callback(updateChampionIDs);
 
-	const laneMap: Record<string, boolean> = {};
-	updateLaneMap();
+	const colorSelector = new Selector<Color>();
 
-	function updateLaneMap() {
-		for (const lane of lanes) {
-			laneMap[lane.lane] = laneSelector.selected == lane.lane;
-		}
-	} 
-
-	const colorSelector = new Selector<Color>(updateChampionIDs, updateColorMap);
+	colorSelector.callback(updateChampionIDs);
 
 	colorsStore.callback(updateChampionIDs);
-
-	const colorMap: Record<string, boolean> = {};
-	updateColorMap();
-
-	function updateColorMap() {
-		for (const color of colors) {
-			colorMap[color.color] = colorSelector.selected == color.color;
-		}
-	} 
 
 	let championIDs = allChampionIDs;
 	updateChampionIDs();
@@ -156,13 +142,13 @@
 					<!-- svelte-ignore a11y-missing-attribute -->
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-					<img {src} class="{laneMap[lane] ? "selected" : ""}" on:click={() => laneSelector.select(lane)}>
+					<img {src} class="{laneSelector.selected == lane ? "selected" : ""}" on:click={() => laneSelector.select(lane)}>
 				{/each}
 				{#each colors as {color, src}}
 					<!-- svelte-ignore a11y-missing-attribute -->
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-					<img {src} class="color {colorMap[color] ? "selected" : ""}" on:click={() => colorSelector.select(color)}>
+					<img {src} class="color {colorSelector.selected == color ? "selected" : ""}" on:click={() => colorSelector.select(color)}>
 				{/each}
 			</div>
 			<div class="options">
