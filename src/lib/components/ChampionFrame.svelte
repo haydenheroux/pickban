@@ -101,7 +101,6 @@
 	}
 
 	div.gap {
-		/* TODO Check if 1x or 2x looks better */
-		margin-right: calc(1 * var(--section-gap));
+		margin-right: calc(1.5 * var(--section-gap));
 	}
 </style>
