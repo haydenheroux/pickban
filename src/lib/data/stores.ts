@@ -3,65 +3,65 @@ import { storable, type Storable } from "$lib/util/storable";
 
 type ChampionID = string;
 
-class Filter<T extends string | number | symbol> {
-    store: Storable<Record<T, Array<ChampionID>>>;
+class Filter<K extends string | number | symbol, V> {
+    store: Storable<Record<K, Array<V>>>;
     refresh: Trigger;
 
     constructor(name: string) {
-        this.store = storable<Record<T, Array<ChampionID>>>(name, {} as Record<T, Array<ChampionID>>);
+        this.store = storable<Record<K, Array<V>>>(name, {} as Record<K, Array<V>>);
         this.refresh = trigger();
     }
 
-    matches(id: ChampionID | null, value: T | null): boolean {
-        if (id == null || value == null) return false;
+    matches(value: V | null, key: K | null): boolean {
+        if (value == null || key == null) return false;
 
         const associations = this.store.get();
 
-        const matchingIDs = new Set(associations[value]);
+        const matchingIDs = new Set(associations[key]);
 
-        return matchingIDs.has(id);
+        return matchingIDs.has(value);
     }
     
-    predicate(value: T | null): (id: ChampionID | null) => boolean {
+    predicate(key: K | null): (value: V | null) => boolean {
         // Usually null would be considered no match, but override that behavior here
-        if (value == null) {
+        if (key == null) {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            return (id) => true;
+            return (value) => true;
         }
 
-        return (id) => this.matches(id, value);
+        return (value) => this.matches(value, key);
     }
 
-    associate(id: ChampionID | null, value: T) {
-        if (id == null) return;
+    associate(value: V | null, key: K) {
+        if (value == null) return;
 
         const associations = this.store.get();
 
-        const matchingIDs = new Set(associations[value]);
+        const matchingIDs = new Set(associations[key]);
 
-        if (matchingIDs.has(id) == false) {
-            matchingIDs.add(id);
+        if (matchingIDs.has(value) == false) {
+            matchingIDs.add(value);
         }
 
-        associations[value] = [...matchingIDs];
+        associations[key] = [...matchingIDs];
 
         this.store.set(associations);
 
         this.refresh.trigger();
     }
 
-    dissociate(id: ChampionID | null, value: T) {
-        if (id == null) return;
+    dissociate(value: V | null, key: K) {
+        if (value == null) return;
 
         const associations = this.store.get();
 
-        const matchingIDs = new Set(associations[value]);
+        const matchingIDs = new Set(associations[key]);
 
-        if (matchingIDs.has(id)) {
-            matchingIDs.delete(id);
+        if (matchingIDs.has(value)) {
+            matchingIDs.delete(value);
         }
 
-        associations[value] = [...matchingIDs];
+        associations[key] = [...matchingIDs];
 
         this.store.set(associations);
 
@@ -81,7 +81,7 @@ export enum Lane {
     Support = "Support"
 } 
 
-export const lanes = new Filter<Lane>("lanes");
+export const lanes = new Filter<Lane, ChampionID>("lanes");
 
 export enum Color {
     Red = "Red",
@@ -91,7 +91,7 @@ export enum Color {
     Black = "Black"
 }
 
-export const colors = new Filter<Color>("colors");
+export const colors = new Filter<Color, ChampionID>("colors");
 
 export const hideContextMenus = trigger();
 
