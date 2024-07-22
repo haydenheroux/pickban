@@ -21,6 +21,16 @@ class Filter<T extends string | number | symbol> {
 
         return matchingIDs.has(id);
     }
+    
+    predicate(value: T | null): (id: ChampionID | null) => boolean {
+        // Usually null would be considered no match, but override that behavior here
+        if (value == null) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            return (id) => true;
+        }
+
+        return (id) => this.matches(id, value);
+    }
 
     associate(id: ChampionID | null, value: T) {
         if (id == null) return;
@@ -58,7 +68,7 @@ class Filter<T extends string | number | symbol> {
         this.refresh.trigger();
     }
 
-    onUpdate(callback: () => void) {
+    callback(callback: () => void) {
         this.refresh.onTrigger(callback);
     }
 }

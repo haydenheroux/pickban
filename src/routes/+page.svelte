@@ -104,40 +104,16 @@
 	let championIDs = allChampionIDs;
 	updateChampionFilter();
 
-	type LanePredicate = (lane: Lane | null, championIDOrNull: string | null) => boolean;
-
-	function getLaneFilterPredicate(laneFilterOrNull: Lane | null): LanePredicate {
-		if (laneFilterOrNull == null) {
-			return (_lane, _championIDOrNull) => true;
-		}
-
-		return (lane, championIDOrNull) => lanesStore.matches(championIDOrNull, lane);
-	}
-
-	type ColorPredicate = (color: Color | null, championIDOrNull: string | null) => boolean;
-
-	function getColorFilterPredicate(colorFilterOrNull: Color | null): ColorPredicate {
-		if (colorFilterOrNull == null) {
-			return (_color, _championIDOrNull) => true;
-		}
-
-		return (color, championIDOrNull) => colorsStore.matches(championIDOrNull, color);
-	}
-
 	function updateChampionFilter() {
-		const laneFilterPredicate = getLaneFilterPredicate(laneFilterOrNull);
-		const colorFilterPredicate = getColorFilterPredicate(colorFilterOrNull);
+		const lanePredicate = lanesStore.predicate(laneFilterOrNull);
+		const colorPredicate = colorsStore.predicate(colorFilterOrNull);
 
-		championIDs = allChampionIDs.filter(championID => laneFilterPredicate(laneFilterOrNull, championID) && colorFilterPredicate(colorFilterOrNull, championID));
+		championIDs = allChampionIDs.filter(id => lanePredicate(id) && colorPredicate(id));
 	}
 
-	lanesStore.onUpdate(() => {
-		updateChampionFilter();
-	});
+	lanesStore.callback(updateChampionFilter);
 
-	colorsStore.onUpdate(() => {
-		updateChampionFilter();
-	});
+	colorsStore.callback(updateChampionFilter);
 
 	let laneFilterMap: Record<string, boolean> = {};
 	updateLaneFilterMap();
