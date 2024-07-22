@@ -1,13 +1,15 @@
 <script lang="ts">
 	import ChampionFrame from '$lib/components/ChampionFrame.svelte';
-	import { colors, lanes, close } from '$lib/data/assets';
+	import { colors, lanes, types, close } from '$lib/data/assets';
 	import { allChampionIDs } from '$lib/data/data_dragon';
 	import {
 		Color,
 		Lane,
 		lanes as lanesStore,
 		colors as colorsStore,
-		picks as picksStore
+		types as typesStore,
+		picks as picksStore,
+		Type
 	} from '$lib/data/stores';
 	import { Selector } from '$lib/util/selector';
 
@@ -103,14 +105,23 @@
 
 	colorsStore.callback(updateChampionIDs);
 
+	const typeSelector = new Selector<Type>();
+
+	typeSelector.callback(updateChampionIDs);
+
+	typesStore.callback(updateChampionIDs);
+
 	let championIDs = allChampionIDs;
 	updateChampionIDs();
 
 	function updateChampionIDs() {
 		const lanePredicate = lanesStore.predicate(laneSelector.selected);
 		const colorPredicate = colorsStore.predicate(colorSelector.selected);
+		const typePredicate = typesStore.predicate(typeSelector.selected);
 
-		championIDs = allChampionIDs.filter((id) => lanePredicate(id) && colorPredicate(id));
+		championIDs = allChampionIDs.filter(
+			(id) => lanePredicate(id) && colorPredicate(id) && typePredicate(id)
+		);
 	}
 
 	function clearPickBan(_event: any) {
@@ -184,6 +195,16 @@
 						{src}
 						class={laneSelector.selected == lane ? 'selected' : ''}
 						on:click={() => laneSelector.select(lane)}
+					/>
+				{/each}
+				{#each types as { type, src }}
+					<!-- svelte-ignore a11y-missing-attribute -->
+					<!-- svelte-ignore a11y-click-events-have-key-events -->
+					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+					<img
+						{src}
+						class={typeSelector.selected == type ? 'selected' : ''}
+						on:click={() => typeSelector.select(type)}
 					/>
 				{/each}
 				{#each colors as { color, src }}

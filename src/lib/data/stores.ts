@@ -24,6 +24,14 @@ export enum Color {
 
 export const colors = new Filter<Color, ChampionID>('colors');
 
+export enum Type {
+	Magic = 'Magic',
+	Physical = 'Physical',
+	CrowdControl = 'CC'
+}
+
+export const types = new Filter<Type, ChampionID>('types');
+
 export const hideContextMenus = trigger();
 
 export interface Picks {

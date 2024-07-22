@@ -1,4 +1,4 @@
-import { Color, Lane } from './stores';
+import { Color, Lane, Type } from './stores';
 
 export const lanes = [
 	{ lane: Lane.Top, src: 'roles/top.png' },
@@ -14,6 +14,12 @@ export const colors = [
 	{ color: Color.Blue, src: 'colors/blue.svg' },
 	{ color: Color.White, src: 'colors/white.svg' },
 	{ color: Color.Black, src: 'colors/black.svg' }
+];
+
+export const types = [
+	{ type: Type.Physical, src: 'types/physical.png' },
+	{ type: Type.Magic, src: 'types/magic.png' },
+	{ type: Type.CrowdControl, src: 'types/cc.png' }
 ];
 
 export const close = 'ui/close.png';

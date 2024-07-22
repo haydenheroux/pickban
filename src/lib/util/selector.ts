@@ -12,10 +12,6 @@ export class Selector<T extends string | number | symbol> {
 		this.trigger.onTrigger(callback);
 	}
 
-	get(): T | null {
-		return this.selected;
-	}
-
 	select(value: T) {
 		if (this.selected != value) {
 			this.selected = value;
