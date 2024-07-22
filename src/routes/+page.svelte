@@ -298,7 +298,7 @@
 	}
 
 	.picks div:nth-child(3) {
-		margin-bottom: calc(2 * var(--section-gap));
+		margin-bottom: calc(1.5 * var(--section-gap));
 	}
 
 	.picker {
