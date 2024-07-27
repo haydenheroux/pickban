@@ -93,23 +93,26 @@
 		}
 	}
 
-	const laneSelector = new Selector<Lane>();
+	let laneSelector = new Selector<Lane>();
 
-	laneSelector.callback(updateChampionIDs);
+	laneSelector.onChange(updateChampionIDs);
+	laneSelector.onChange(() => (laneSelector = laneSelector));
 
-	lanesStore.callback(updateChampionIDs);
+	lanesStore.onChange(updateChampionIDs);
 
-	const colorSelector = new Selector<Color>();
+	let colorSelector = new Selector<Color>();
 
-	colorSelector.callback(updateChampionIDs);
+	colorSelector.onChange(updateChampionIDs);
+	colorSelector.onChange(() => (colorSelector = colorSelector));
 
-	colorsStore.callback(updateChampionIDs);
+	colorsStore.onChange(updateChampionIDs);
 
-	const typeSelector = new Selector<Type>();
+	let typeSelector = new Selector<Type>();
 
-	typeSelector.callback(updateChampionIDs);
+	typeSelector.onChange(updateChampionIDs);
+	typeSelector.onChange(() => (typeSelector = typeSelector));
 
-	typesStore.callback(updateChampionIDs);
+	typesStore.onChange(updateChampionIDs);
 
 	let championIDs = allChampionIDs;
 	updateChampionIDs();

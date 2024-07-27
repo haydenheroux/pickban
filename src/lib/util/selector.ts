@@ -8,7 +8,7 @@ export class Selector<T extends string | number | symbol> {
 		this.trigger = trigger();
 	}
 
-	callback(callback: () => void) {
+	onChange(callback: () => void) {
 		this.trigger.onTrigger(callback);
 	}
 

@@ -66,7 +66,7 @@ export class Filter<K extends string | number | symbol, V> {
 		this.refresh.trigger();
 	}
 
-	callback(callback: () => void) {
+	onChange(callback: () => void) {
 		this.refresh.onTrigger(callback);
 	}
 }
