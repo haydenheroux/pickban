@@ -25,13 +25,13 @@ export enum Color {
 
 export const colors = new Filter<Color, ChampionID>('colors');
 
-export enum Type {
+export enum Damage {
 	Magic = 'Magic',
 	Physical = 'Physical',
 	CrowdControl = 'CC'
 }
 
-export const types = new Filter<Type, ChampionID>('types');
+export const damages = new Filter<Damage, ChampionID>('damages');
 
 export const hideContextMenus = trigger();
 

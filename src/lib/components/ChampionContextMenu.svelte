@@ -1,7 +1,11 @@
 <script lang="ts">
-	import { colors, lanes, types } from '$lib/data/assets';
+	import { colors, lanes, damages } from '$lib/data/assets';
 	import { getChampionNameOrNull } from '$lib/data/data_dragon';
-	import { colors as colorStore, lanes as laneStore, types as typeStore } from '$lib/data/stores';
+	import {
+		colors as colorStore,
+		lanes as laneStore,
+		damages as damageStore
+	} from '$lib/data/stores';
 	export let championID: string | null = null;
 
 	export let x: number;
@@ -42,25 +46,25 @@
 				</li>
 			{/if}
 		{/each}
-		{#each types as { type, src }}
-			{#if typeStore.matches(championID, type)}
+		{#each damages as { damage, src }}
+			{#if damageStore.matches(championID, damage)}
 				<li>
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<!-- svelte-ignore a11y-no-static-element-interactions -->
-					<div on:click={() => typeStore.dissociate(championID, type)}>
+					<div on:click={() => damageStore.dissociate(championID, damage)}>
 						<!-- svelte-ignore a11y-missing-attribute -->
 						<img {src} />
-						<button>Remove {type}</button>
+						<button>Remove {damage}</button>
 					</div>
 				</li>
 			{:else}
 				<li>
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<!-- svelte-ignore a11y-no-static-element-interactions -->
-					<div on:click={() => typeStore.associate(championID, type)}>
+					<div on:click={() => damageStore.associate(championID, damage)}>
 						<!-- svelte-ignore a11y-missing-attribute -->
 						<img {src} />
-						<button>Add {type}</button>
+						<button>Add {damage}</button>
 					</div>
 				</li>
 			{/if}

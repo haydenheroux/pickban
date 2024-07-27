@@ -1,15 +1,15 @@
 <script lang="ts">
 	import ChampionFrame from '$lib/components/ChampionFrame.svelte';
-	import { colors, lanes, types, close } from '$lib/data/assets';
+	import { colors, lanes, damages, close } from '$lib/data/assets';
 	import { allChampionIDs } from '$lib/data/data_dragon';
 	import {
 		Color,
 		Lane,
 		lanes as lanesStore,
 		colors as colorsStore,
-		types as typesStore,
+		damages as damagesStore,
 		picks as picksStore,
-		Type
+		Damage
 	} from '$lib/data/stores';
 	import { Selector } from '$lib/util/selector';
 
@@ -107,12 +107,12 @@
 
 	colorsStore.onChange(updateChampionIDs);
 
-	let typeSelector = new Selector<Type>();
+	let damageSelector = new Selector<Damage>();
 
-	typeSelector.onChange(updateChampionIDs);
-	typeSelector.onChange(() => (typeSelector = typeSelector));
+	damageSelector.onChange(updateChampionIDs);
+	damageSelector.onChange(() => (damageSelector = damageSelector));
 
-	typesStore.onChange(updateChampionIDs);
+	damagesStore.onChange(updateChampionIDs);
 
 	let championIDs = allChampionIDs;
 	updateChampionIDs();
@@ -120,10 +120,10 @@
 	function updateChampionIDs() {
 		const lanePredicate = lanesStore.predicate(laneSelector.selected);
 		const colorPredicate = colorsStore.predicate(colorSelector.selected);
-		const typePredicate = typesStore.predicate(typeSelector.selected);
+		const damagePredicate = damagesStore.predicate(damageSelector.selected);
 
 		championIDs = allChampionIDs.filter(
-			(id) => lanePredicate(id) && colorPredicate(id) && typePredicate(id)
+			(id) => lanePredicate(id) && colorPredicate(id) && damagePredicate(id)
 		);
 	}
 
@@ -201,14 +201,14 @@
 					/>
 				{/each}
 				<div class="separator"></div>
-				{#each types as { type, src }}
+				{#each damages as { damage, src }}
 					<!-- svelte-ignore a11y-missing-attribute -->
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 					<img
 						{src}
-						class={typeSelector.selected == type ? 'selected' : ''}
-						on:click={() => typeSelector.select(type)}
+						class={damageSelector.selected == damage ? 'selected' : ''}
+						on:click={() => damageSelector.select(damage)}
 					/>
 				{/each}
 				<div class="separator"></div>

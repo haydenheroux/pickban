@@ -1,4 +1,4 @@
-import { Color, Lane, Type } from './stores';
+import { Color, Lane, Damage } from './stores';
 
 export const lanes = [
 	{ lane: Lane.Top, src: 'roles/top.png' },
@@ -17,10 +17,10 @@ export const colors = [
 	{ color: Color.Colorless, src: 'colors/colorless.svg' }
 ];
 
-export const types = [
-	{ type: Type.Physical, src: 'types/physical.png' },
-	{ type: Type.Magic, src: 'types/magic.png' },
-	{ type: Type.CrowdControl, src: 'types/cc.png' }
+export const damages = [
+	{ damage: Damage.Physical, src: 'types/physical.png' },
+	{ damage: Damage.Magic, src: 'types/magic.png' },
+	{ damage: Damage.CrowdControl, src: 'types/cc.png' }
 ];
 
 export const close = 'ui/close.png';
