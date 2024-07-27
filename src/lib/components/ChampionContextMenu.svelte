@@ -23,7 +23,7 @@
 >
 	<ul>
 		<li><p>{name ? name : ''}</p></li>
-		{#each lanes as { lane, src }}
+		{#each lanes as { type: lane, src }}
 			{#if laneStore.matches(championID, lane)}
 				<li>
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -46,7 +46,7 @@
 				</li>
 			{/if}
 		{/each}
-		{#each damages as { damage, src }}
+		{#each damages as { type: damage, src }}
 			{#if damageStore.matches(championID, damage)}
 				<li>
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -69,7 +69,7 @@
 				</li>
 			{/if}
 		{/each}
-		{#each colors as { color, src }}
+		{#each colors as { type: color, src }}
 			{#if colorStore.matches(championID, color)}
 				<li>
 					<!-- svelte-ignore a11y-click-events-have-key-events -->

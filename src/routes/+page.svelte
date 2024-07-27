@@ -190,7 +190,7 @@
 	<div class="picker">
 		<div class="bar">
 			<div class="filter">
-				{#each lanes as { lane, src }}
+				{#each lanes as { type: lane, src }}
 					<!-- svelte-ignore a11y-missing-attribute -->
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
@@ -201,7 +201,7 @@
 					/>
 				{/each}
 				<div class="separator"></div>
-				{#each damages as { damage, src }}
+				{#each damages as { type: damage, src }}
 					<!-- svelte-ignore a11y-missing-attribute -->
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
@@ -212,7 +212,7 @@
 					/>
 				{/each}
 				<div class="separator"></div>
-				{#each colors as { color, src }}
+				{#each colors as { type: color, src }}
 					<!-- svelte-ignore a11y-missing-attribute -->
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
