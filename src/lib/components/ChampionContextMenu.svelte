@@ -18,6 +18,7 @@
 >
 	<ul>
 		<li><p>{name ? name : ''}</p></li>
+		<div class="separator"></div>
 		{#each entries as entry}
 			{#each entry.assets as { type, src }}
 				{#if entry.filter.matches(championID, type)}
@@ -42,6 +43,7 @@
 					</li>
 				{/if}
 			{/each}
+			<div class="separator"></div>
 		{/each}
 	</ul>
 </nav>
@@ -74,6 +76,13 @@
 		display: flex;
 		gap: 0.25rem;
 		align-items: center;
+	}
+
+	.context-menu ul .separator:not(:last-of-type) {
+		border-bottom: 1px solid var(--clr-neutral-800);
+		border-radius: var(--radius-element);
+
+		margin-block: 0.25rem;
 	}
 
 	img {

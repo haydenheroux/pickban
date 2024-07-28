@@ -300,7 +300,7 @@
 		gap: 0.25rem;
 	}
 
-	.picker .bar .filter .separator {
+	.picker .bar .filter .separator:not(:last-of-type) {
 		border-left: 1px solid var(--clr-neutral-800);
 		border-radius: var(--radius-element);
 
