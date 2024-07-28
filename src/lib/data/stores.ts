@@ -2,8 +2,8 @@ import { trigger } from '$lib/util/trigger';
 import { storable } from '$lib/util/storable';
 import { Filter } from '$lib/util/filter';
 import { Selector } from '$lib/util/selector';
-import { colorAssets, damageAssets, laneAssets, type Asset } from './assets';
-import type { Color, Damage, Lane } from './enums';
+import { colorAssets, damageAssets, laneAssets, utilityAssets, type Asset } from './assets';
+import type { Color, Damage, Lane, Utility } from './enums';
 
 type ChampionID = string;
 
@@ -30,7 +30,9 @@ const color = new Entry<Color, ChampionID>('colors', colorAssets);
 
 const damage = new Entry<Damage, ChampionID>('damages', damageAssets);
 
-export const entries = [lane, damage, color];
+const utility = new Entry<Utility, ChampionID>('utilities', utilityAssets);
+
+export const entries = [lane, damage, utility, color];
 
 export const hideContextMenus = trigger();
 

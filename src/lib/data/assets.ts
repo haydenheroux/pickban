@@ -1,4 +1,4 @@
-import { Color, Damage, Lane } from './enums';
+import { Color, Damage, Lane, Utility } from './enums';
 
 export interface Asset<T> {
 	type: T;
@@ -28,9 +28,10 @@ export const colorAssets = [
 
 export const damageAssets = [
 	asset(Damage.Physical, 'types/physical.png'),
-	asset(Damage.Magic, 'types/magic.png'),
-	asset(Damage.CrowdControl, 'types/cc.png')
+	asset(Damage.Magic, 'types/magic.png')
 ];
+
+export const utilityAssets = [asset(Utility.CrowdControl, 'types/cc.png')];
 
 export const close = 'ui/close.png';
 

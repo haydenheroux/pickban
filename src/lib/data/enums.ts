@@ -17,6 +17,9 @@ export enum Color {
 
 export enum Damage {
 	Magic = 'Magic',
-	Physical = 'Physical',
+	Physical = 'Physical'
+}
+
+export enum Utility {
 	CrowdControl = 'CC'
 }
