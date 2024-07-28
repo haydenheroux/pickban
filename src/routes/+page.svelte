@@ -13,6 +13,8 @@
 
 	let picks = storedPicks.get();
 
+	let update = 0;
+
 	function handle(event: any) {
 		const message = event.detail;
 
@@ -86,6 +88,7 @@
 
 	for (const entry of entries) {
 		entry.onChange(updateChampionIDs);
+		entry.onChange(() => (update += 1));
 	}
 
 	let championIDs = allChampionIDs;
@@ -172,19 +175,21 @@
 	<div class="picker">
 		<div class="bar">
 			<div class="filter">
-				{#each entries as entry}
-					{#each entry.assets as { type, src }}
-						<!-- svelte-ignore a11y-missing-attribute -->
-						<!-- svelte-ignore a11y-click-events-have-key-events -->
-						<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-						<img
-							{src}
-							class={entry.selector.selected == type ? 'selected' : ''}
-							on:click={() => entry.selector.select(type)}
-						/>
+				{#key update}
+					{#each entries as entry}
+						{#each entry.assets as { type, src }}
+							<!-- svelte-ignore a11y-missing-attribute -->
+							<!-- svelte-ignore a11y-click-events-have-key-events -->
+							<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+							<img
+								{src}
+								class={entry.selector.selected == type ? 'selected' : ''}
+								on:click={() => entry.selector.select(type)}
+							/>
+						{/each}
+						<div class="separator"></div>
 					{/each}
-					<div class="separator"></div>
-				{/each}
+				{/key}
 			</div>
 			<div class="options">
 				<!-- svelte-ignore a11y-click-events-have-key-events -->
