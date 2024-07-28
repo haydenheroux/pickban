@@ -2,7 +2,7 @@
 	import ChampionFrame from '$lib/components/ChampionFrame.svelte';
 	import { close } from '$lib/data/assets';
 	import { allChampionIDs } from '$lib/data/data_dragon';
-	import { lane, color, damage, picks as storedPicks } from '$lib/data/stores';
+	import { entries, picks as storedPicks } from '$lib/data/stores';
 
 	let previousMessageOrNull: any | null = null;
 	let selectedChampionIDOrNull: string | null = null;
@@ -84,21 +84,29 @@
 		}
 	}
 
-	lane.onChange(updateChampionIDs);
-	color.onChange(updateChampionIDs);
-	damage.onChange(updateChampionIDs);
+	for (const entry of entries) {
+		entry.onChange(updateChampionIDs);
+	}
 
 	let championIDs = allChampionIDs;
 	updateChampionIDs();
 
 	function updateChampionIDs() {
-		const lanePredicate = lane.filter.predicate(lane.selector.selected);
-		const colorPredicate = color.filter.predicate(color.selector.selected);
-		const damagePredicate = damage.filter.predicate(damage.selector.selected);
+		const predicates = [];
 
-		championIDs = allChampionIDs.filter(
-			(id) => lanePredicate(id) && colorPredicate(id) && damagePredicate(id)
-		);
+		for (const entry of entries) {
+			predicates.push(entry.filter.predicate(entry.selector.selected));
+		}
+
+		championIDs = allChampionIDs.filter((id) => {
+			for (const predicate of predicates) {
+				if (!predicate(id)) {
+					return false;
+				}
+			}
+
+			return true;
+		});
 	}
 
 	function clearPickBan(_event: any) {
@@ -164,37 +172,18 @@
 	<div class="picker">
 		<div class="bar">
 			<div class="filter">
-				{#each lane.assets as { type, src }}
-					<!-- svelte-ignore a11y-missing-attribute -->
-					<!-- svelte-ignore a11y-click-events-have-key-events -->
-					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-					<img
-						{src}
-						class={lane.selector.selected == type ? 'selected' : ''}
-						on:click={() => lane.selector.select(type)}
-					/>
-				{/each}
-				<div class="separator"></div>
-				{#each damage.assets as { type, src }}
-					<!-- svelte-ignore a11y-missing-attribute -->
-					<!-- svelte-ignore a11y-click-events-have-key-events -->
-					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-					<img
-						{src}
-						class={damage.selector.selected == type ? 'selected' : ''}
-						on:click={() => damage.selector.select(type)}
-					/>
-				{/each}
-				<div class="separator"></div>
-				{#each color.assets as { type, src }}
-					<!-- svelte-ignore a11y-missing-attribute -->
-					<!-- svelte-ignore a11y-click-events-have-key-events -->
-					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-					<img
-						{src}
-						class="color {color.selector.selected == type ? 'selected' : ''}"
-						on:click={() => color.selector.select(type)}
-					/>
+				{#each entries as entry}
+					{#each entry.assets as { type, src }}
+						<!-- svelte-ignore a11y-missing-attribute -->
+						<!-- svelte-ignore a11y-click-events-have-key-events -->
+						<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+						<img
+							{src}
+							class={entry.selector.selected == type ? 'selected' : ''}
+							on:click={() => entry.selector.select(type)}
+						/>
+					{/each}
+					<div class="separator"></div>
 				{/each}
 			</div>
 			<div class="options">

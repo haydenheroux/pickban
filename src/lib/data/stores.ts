@@ -24,11 +24,13 @@ class Entry<K extends string | number | symbol, V> {
 	}
 }
 
-export const lane = new Entry<Lane, ChampionID>('lanes', laneAssets);
+const lane = new Entry<Lane, ChampionID>('lanes', laneAssets);
 
-export const color = new Entry<Color, ChampionID>('colors', colorAssets);
+const color = new Entry<Color, ChampionID>('colors', colorAssets);
 
-export const damage = new Entry<Damage, ChampionID>('damages', damageAssets);
+const damage = new Entry<Damage, ChampionID>('damages', damageAssets);
+
+export const entries = [lane, damage, color];
 
 export const hideContextMenus = trigger();
 
