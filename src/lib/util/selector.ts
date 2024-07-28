@@ -21,4 +21,10 @@ export class Selector<T extends string | number | symbol> {
 
 		this.trigger.trigger();
 	}
+
+	deselect() {
+		this.selected = null;
+
+		this.trigger.trigger();
+	}
 }
