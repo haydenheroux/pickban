@@ -1,17 +1,8 @@
 <script lang="ts">
 	import ChampionFrame from '$lib/components/ChampionFrame.svelte';
-	import { colors, lanes, types, close } from '$lib/data/assets';
+	import { close } from '$lib/data/assets';
 	import { allChampionIDs } from '$lib/data/data_dragon';
-	import {
-		Color,
-		Lane,
-		lanes as lanesStore,
-		colors as colorsStore,
-		types as typesStore,
-		picks as picksStore,
-		Type
-	} from '$lib/data/stores';
-	import { Selector } from '$lib/util/selector';
+	import { entries, picks as storedPicks } from '$lib/data/stores';
 
 	let previousMessageOrNull: any | null = null;
 	let selectedChampionIDOrNull: string | null = null;
@@ -20,7 +11,7 @@
 	let blueBans = new Array(5).fill(null);
 	let redBans = new Array(5).fill(null);
 
-	let picks = picksStore.get();
+	let picks = storedPicks.get();
 
 	function handle(event: any) {
 		const message = event.detail;
@@ -53,7 +44,7 @@
 
 		previousMessageOrNull = message;
 
-		picksStore.set(picks);
+		storedPicks.set(picks);
 
 		updateSelected();
 		updateDisabled();
@@ -93,38 +84,29 @@
 		}
 	}
 
-	let laneSelector = new Selector<Lane>();
-
-	laneSelector.onChange(updateChampionIDs);
-	laneSelector.onChange(() => (laneSelector = laneSelector));
-
-	lanesStore.onChange(updateChampionIDs);
-
-	let colorSelector = new Selector<Color>();
-
-	colorSelector.onChange(updateChampionIDs);
-	colorSelector.onChange(() => (colorSelector = colorSelector));
-
-	colorsStore.onChange(updateChampionIDs);
-
-	let typeSelector = new Selector<Type>();
-
-	typeSelector.onChange(updateChampionIDs);
-	typeSelector.onChange(() => (typeSelector = typeSelector));
-
-	typesStore.onChange(updateChampionIDs);
+	for (const entry of entries) {
+		entry.onChange(updateChampionIDs);
+	}
 
 	let championIDs = allChampionIDs;
 	updateChampionIDs();
 
 	function updateChampionIDs() {
-		const lanePredicate = lanesStore.predicate(laneSelector.selected);
-		const colorPredicate = colorsStore.predicate(colorSelector.selected);
-		const typePredicate = typesStore.predicate(typeSelector.selected);
+		const predicates = [];
 
-		championIDs = allChampionIDs.filter(
-			(id) => lanePredicate(id) && colorPredicate(id) && typePredicate(id)
-		);
+		for (const entry of entries) {
+			predicates.push(entry.filter.predicate(entry.selector.selected));
+		}
+
+		championIDs = allChampionIDs.filter((id) => {
+			for (const predicate of predicates) {
+				if (!predicate(id)) {
+					return false;
+				}
+			}
+
+			return true;
+		});
 	}
 
 	function clearPickBan(_event: any) {
@@ -133,7 +115,7 @@
 
 		picks.blue = new Array(5).fill(null);
 		picks.red = new Array(5).fill(null);
-		picksStore.set(picks);
+		storedPicks.set(picks);
 
 		updateSelected();
 		updateDisabled();
@@ -190,37 +172,18 @@
 	<div class="picker">
 		<div class="bar">
 			<div class="filter">
-				{#each lanes as { lane, src }}
-					<!-- svelte-ignore a11y-missing-attribute -->
-					<!-- svelte-ignore a11y-click-events-have-key-events -->
-					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-					<img
-						{src}
-						class={laneSelector.selected == lane ? 'selected' : ''}
-						on:click={() => laneSelector.select(lane)}
-					/>
-				{/each}
-				<div class="separator"></div>
-				{#each types as { type, src }}
-					<!-- svelte-ignore a11y-missing-attribute -->
-					<!-- svelte-ignore a11y-click-events-have-key-events -->
-					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-					<img
-						{src}
-						class={typeSelector.selected == type ? 'selected' : ''}
-						on:click={() => typeSelector.select(type)}
-					/>
-				{/each}
-				<div class="separator"></div>
-				{#each colors as { color, src }}
-					<!-- svelte-ignore a11y-missing-attribute -->
-					<!-- svelte-ignore a11y-click-events-have-key-events -->
-					<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-					<img
-						{src}
-						class="color {colorSelector.selected == color ? 'selected' : ''}"
-						on:click={() => colorSelector.select(color)}
-					/>
+				{#each entries as entry}
+					{#each entry.assets as { type, src }}
+						<!-- svelte-ignore a11y-missing-attribute -->
+						<!-- svelte-ignore a11y-click-events-have-key-events -->
+						<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+						<img
+							{src}
+							class={entry.selector.selected == type ? 'selected' : ''}
+							on:click={() => entry.selector.select(type)}
+						/>
+					{/each}
+					<div class="separator"></div>
 				{/each}
 			</div>
 			<div class="options">

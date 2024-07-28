@@ -1,37 +1,38 @@
 import { trigger } from '$lib/util/trigger';
 import { storable } from '$lib/util/storable';
 import { Filter } from '$lib/util/filter';
+import { Selector } from '$lib/util/selector';
+import { colorAssets, damageAssets, laneAssets, utilityAssets, type Asset } from './assets';
+import type { Color, Damage, Lane, Utility } from './enums';
 
 type ChampionID = string;
 
-export enum Lane {
-	Top = 'Top',
-	Jungle = 'Jungle',
-	Middle = 'Middle',
-	Bottom = 'Bottom',
-	Support = 'Support'
+class Entry<K extends string | number | symbol, V> {
+	filter: Filter<K, V>;
+	selector: Selector<K>;
+	assets: Array<Asset<K>>;
+
+	constructor(name: string, assets: Array<Asset<K>>) {
+		this.filter = new Filter<K, V>(name);
+		this.selector = new Selector<K>();
+		this.assets = assets;
+	}
+
+	onChange(callback: () => void) {
+		this.filter.onChange(callback);
+		this.selector.onChange(callback);
+	}
 }
 
-export const lanes = new Filter<Lane, ChampionID>('lanes');
+const lane = new Entry<Lane, ChampionID>('lanes', laneAssets);
 
-export enum Color {
-	Red = 'Red',
-	Green = 'Green',
-	Blue = 'Blue',
-	White = 'White',
-	Black = 'Black',
-	Colorless = 'Colorless'
-}
+const color = new Entry<Color, ChampionID>('colors', colorAssets);
 
-export const colors = new Filter<Color, ChampionID>('colors');
+const damage = new Entry<Damage, ChampionID>('damages', damageAssets);
 
-export enum Type {
-	Magic = 'Magic',
-	Physical = 'Physical',
-	CrowdControl = 'CC'
-}
+const utility = new Entry<Utility, ChampionID>('utilities', utilityAssets);
 
-export const types = new Filter<Type, ChampionID>('types');
+export const entries = [lane, damage, utility, color];
 
 export const hideContextMenus = trigger();
 

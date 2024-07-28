@@ -1,27 +1,37 @@
-import { Color, Lane, Type } from './stores';
+import { Color, Damage, Lane, Utility } from './enums';
 
-export const lanes = [
-	{ lane: Lane.Top, src: 'roles/top.png' },
-	{ lane: Lane.Jungle, src: 'roles/jungle.png' },
-	{ lane: Lane.Middle, src: 'roles/middle.png' },
-	{ lane: Lane.Bottom, src: 'roles/bottom.png' },
-	{ lane: Lane.Support, src: 'roles/support.png' }
+export interface Asset<T> {
+	type: T;
+	src: string;
+}
+
+function asset<T>(type: T, src: string): Asset<T> {
+	return { type, src };
+}
+
+export const laneAssets: Array<Asset<Lane>> = [
+	asset(Lane.Top, 'roles/top.png'),
+	asset(Lane.Jungle, 'roles/jungle.png'),
+	asset(Lane.Middle, 'roles/middle.png'),
+	asset(Lane.Bottom, 'roles/bottom.png'),
+	asset(Lane.Support, 'roles/support.png')
 ];
 
-export const colors = [
-	{ color: Color.Red, src: 'colors/red.svg' },
-	{ color: Color.Green, src: 'colors/green.svg' },
-	{ color: Color.Blue, src: 'colors/blue.svg' },
-	{ color: Color.White, src: 'colors/white.svg' },
-	{ color: Color.Black, src: 'colors/black.svg' },
-	{ color: Color.Colorless, src: 'colors/colorless.svg' }
+export const colorAssets = [
+	asset(Color.Red, 'colors/red.svg'),
+	asset(Color.Green, 'colors/green.svg'),
+	asset(Color.Blue, 'colors/blue.svg'),
+	asset(Color.White, 'colors/white.svg'),
+	asset(Color.Black, 'colors/black.svg'),
+	asset(Color.Colorless, 'colors/colorless.svg')
 ];
 
-export const types = [
-	{ type: Type.Physical, src: 'types/physical.png' },
-	{ type: Type.Magic, src: 'types/magic.png' },
-	{ type: Type.CrowdControl, src: 'types/cc.png' }
+export const damageAssets = [
+	asset(Damage.Physical, 'types/physical.png'),
+	asset(Damage.Magic, 'types/magic.png')
 ];
+
+export const utilityAssets = [asset(Utility.CrowdControl, 'types/cc.png')];
 
 export const close = 'ui/close.png';
 
