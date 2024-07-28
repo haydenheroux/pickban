@@ -1,6 +1,6 @@
-import { Color, Lane, Damage } from './stores';
+import { Color, Damage, Lane } from './enums';
 
-interface Asset<T> {
+export interface Asset<T> {
 	type: T;
 	src: string;
 }
@@ -9,7 +9,7 @@ function asset<T>(type: T, src: string): Asset<T> {
 	return { type, src };
 }
 
-export const lanes: Array<Asset<Lane>> = [
+export const laneAssets: Array<Asset<Lane>> = [
 	asset(Lane.Top, 'roles/top.png'),
 	asset(Lane.Jungle, 'roles/jungle.png'),
 	asset(Lane.Middle, 'roles/middle.png'),
@@ -17,7 +17,7 @@ export const lanes: Array<Asset<Lane>> = [
 	asset(Lane.Support, 'roles/support.png')
 ];
 
-export const colors = [
+export const colorAssets = [
 	asset(Color.Red, 'colors/red.svg'),
 	asset(Color.Green, 'colors/green.svg'),
 	asset(Color.Blue, 'colors/blue.svg'),
@@ -26,7 +26,7 @@ export const colors = [
 	asset(Color.Colorless, 'colors/colorless.svg')
 ];
 
-export const damages = [
+export const damageAssets = [
 	asset(Damage.Physical, 'types/physical.png'),
 	asset(Damage.Magic, 'types/magic.png'),
 	asset(Damage.CrowdControl, 'types/cc.png')

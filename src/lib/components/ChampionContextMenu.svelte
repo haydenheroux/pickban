@@ -1,11 +1,7 @@
 <script lang="ts">
-	import { colors, lanes, damages } from '$lib/data/assets';
+	import { assets } from '$app/paths';
 	import { getChampionNameOrNull } from '$lib/data/data_dragon';
-	import {
-		colors as colorStore,
-		lanes as laneStore,
-		damages as damageStore
-	} from '$lib/data/stores';
+	import { color, lane, damage } from '$lib/data/stores';
 	export let championID: string | null = null;
 
 	export let x: number;
@@ -23,71 +19,71 @@
 >
 	<ul>
 		<li><p>{name ? name : ''}</p></li>
-		{#each lanes as { type: lane, src }}
-			{#if laneStore.matches(championID, lane)}
+		{#each lane.assets as { type, src }}
+			{#if lane.filter.matches(championID, type)}
 				<li>
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<!-- svelte-ignore a11y-no-static-element-interactions -->
-					<div on:click={() => laneStore.dissociate(championID, lane)}>
+					<div on:click={() => lane.filter.dissociate(championID, type)}>
 						<!-- svelte-ignore a11y-missing-attribute -->
 						<img {src} />
-						<button>Remove {lane}</button>
+						<button>Remove {type}</button>
 					</div>
 				</li>
 			{:else}
 				<li>
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<!-- svelte-ignore a11y-no-static-element-interactions -->
-					<div on:click={() => laneStore.associate(championID, lane)}>
+					<div on:click={() => lane.filter.associate(championID, type)}>
 						<!-- svelte-ignore a11y-missing-attribute -->
 						<img {src} />
-						<button>Add {lane}</button>
+						<button>Add {type}</button>
 					</div>
 				</li>
 			{/if}
 		{/each}
-		{#each damages as { type: damage, src }}
-			{#if damageStore.matches(championID, damage)}
+		{#each damage.assets as { type, src }}
+			{#if damage.filter.matches(championID, type)}
 				<li>
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<!-- svelte-ignore a11y-no-static-element-interactions -->
-					<div on:click={() => damageStore.dissociate(championID, damage)}>
+					<div on:click={() => damage.filter.dissociate(championID, type)}>
 						<!-- svelte-ignore a11y-missing-attribute -->
 						<img {src} />
-						<button>Remove {damage}</button>
+						<button>Remove {type}</button>
 					</div>
 				</li>
 			{:else}
 				<li>
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<!-- svelte-ignore a11y-no-static-element-interactions -->
-					<div on:click={() => damageStore.associate(championID, damage)}>
+					<div on:click={() => damage.filter.associate(championID, type)}>
 						<!-- svelte-ignore a11y-missing-attribute -->
 						<img {src} />
-						<button>Add {damage}</button>
+						<button>Add {type}</button>
 					</div>
 				</li>
 			{/if}
 		{/each}
-		{#each colors as { type: color, src }}
-			{#if colorStore.matches(championID, color)}
+		{#each color.assets as { type, src }}
+			{#if color.filter.matches(championID, type)}
 				<li>
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<!-- svelte-ignore a11y-no-static-element-interactions -->
-					<div on:click={() => colorStore.dissociate(championID, color)}>
+					<div on:click={() => color.filter.dissociate(championID, type)}>
 						<!-- svelte-ignore a11y-missing-attribute -->
 						<img class="color" {src} />
-						<button>Remove {color}</button>
+						<button>Remove {type}</button>
 					</div>
 				</li>
 			{:else}
 				<li>
 					<!-- svelte-ignore a11y-click-events-have-key-events -->
 					<!-- svelte-ignore a11y-no-static-element-interactions -->
-					<div on:click={() => colorStore.associate(championID, color)}>
+					<div on:click={() => color.filter.associate(championID, type)}>
 						<!-- svelte-ignore a11y-missing-attribute -->
 						<img class="color" {src} />
-						<button>Add {color}</button>
+						<button>Add {type}</button>
 					</div>
 				</li>
 			{/if}
