@@ -17,6 +17,11 @@ class Entry<K extends string | number | symbol, V> {
 		this.selector = new Selector<K>();
 		this.assets = assets;
 	}
+
+	onChange(callback: () => void) {
+		this.filter.onChange(callback);
+		this.selector.onChange(callback);
+	}
 }
 
 export const lane = new Entry<Lane, ChampionID>('lanes', laneAssets);

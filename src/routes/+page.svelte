@@ -84,22 +84,9 @@
 		}
 	}
 
-	lane.selector.onChange(updateChampionIDs);
-	// TODO Move to constructor
-	lane.selector.onChange(() => (lane.selector = lane.selector));
-
-	// TODO Merge Entry.filter.onChange and selector.onChange to Entry.onChange method
-	lane.filter.onChange(updateChampionIDs);
-
-	color.selector.onChange(updateChampionIDs);
-	color.selector.onChange(() => (color.selector = color.selector));
-
-	color.filter.onChange(updateChampionIDs);
-
-	damage.selector.onChange(updateChampionIDs);
-	damage.selector.onChange(() => (damage.selector = damage.selector));
-
-	damage.filter.onChange(updateChampionIDs);
+	lane.onChange(updateChampionIDs);
+	color.onChange(updateChampionIDs);
+	damage.onChange(updateChampionIDs);
 
 	let championIDs = allChampionIDs;
 	updateChampionIDs();
