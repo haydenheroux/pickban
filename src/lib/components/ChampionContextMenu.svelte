@@ -78,11 +78,6 @@
 
 	img {
 		height: 1rem;
-		filter: grayscale();
-	}
-
-	img.color {
-		filter: none;
 	}
 
 	button {

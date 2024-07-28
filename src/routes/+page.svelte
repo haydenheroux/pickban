@@ -285,13 +285,8 @@
 
 	.picker .bar img {
 		height: 2rem;
-		filter: grayscale();
 
 		cursor: pointer;
-	}
-
-	.picker .bar img.color {
-		filter: none;
 	}
 
 	.picker .bar img.selected,
