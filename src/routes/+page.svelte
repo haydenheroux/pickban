@@ -123,6 +123,10 @@
 		updateSelected();
 		updateDisabled();
 
+		for (const entry of entries) {
+			entry.selector.deselect();
+		}
+
 		// TODO Clear selectedOrNull?
 	}
 </script>
