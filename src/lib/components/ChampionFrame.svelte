@@ -10,7 +10,6 @@
 	export let struck: boolean = false;
 	export let showName: boolean = false;
 	export let settable: boolean = false;
-	export let gap: boolean = false;
 
 	export let disabled: boolean = false;
 	export let selected: boolean = false;
@@ -64,7 +63,7 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div
-	class="{big ? 'big' : ''} {disabled ? 'disabled' : ''} {gap ? 'gap' : ''}"
+	class="{big ? 'big' : ''} {disabled ? 'disabled' : ''}"
 	on:contextmenu|preventDefault={openContextMenu}
 	on:click|preventDefault={onClick}
 >
@@ -98,9 +97,5 @@
 
 	div.big {
 		width: 7rem;
-	}
-
-	div.gap {
-		margin-right: calc(1.5 * var(--section-gap));
 	}
 </style>

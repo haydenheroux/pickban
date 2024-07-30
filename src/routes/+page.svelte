@@ -138,7 +138,6 @@
 				bind:championID={blueBans[i]}
 				on:message={handle}
 				struck={true}
-				gap={i == 2}
 				settable={true}
 				location={'blueBan' + i}
 				bind:selected={selectedMap['blueBan' + i]}
@@ -151,7 +150,6 @@
 				bind:championID={redBans[i]}
 				on:message={handle}
 				struck={true}
-				gap={i == 1}
 				settable={true}
 				location={'redBan' + i}
 				bind:selected={selectedMap['redBan' + i]}
@@ -235,8 +233,17 @@
 <style>
 	.bans-container {
 		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
+		flex-direction: column;
+		gap: var(--main-gap);
+	}
+
+	@media screen and (min-width: 70rem) {
+		/* desktop */
+		.bans-container {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+		}
 	}
 
 	.tri {
