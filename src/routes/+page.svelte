@@ -131,37 +131,32 @@
 	}
 </script>
 
-<div class="bans-container">
-	<div class="bans">
+<div class="grid">
+  <div class="bb bans">
 		{#each Array(5) as _, i}
 			<ChampionFrame
 				bind:championID={blueBans[i]}
 				on:message={handle}
 				struck={true}
-				gap={i == 2}
 				settable={true}
 				location={'blueBan' + i}
 				bind:selected={selectedMap['blueBan' + i]}
 			/>
 		{/each}
-	</div>
-	<div class="bans">
+  </div>
+  <div class="rb bans">
 		{#each Array(5) as _, i}
 			<ChampionFrame
 				bind:championID={redBans[i]}
 				on:message={handle}
 				struck={true}
-				gap={i == 1}
 				settable={true}
 				location={'redBan' + i}
 				bind:selected={selectedMap['redBan' + i]}
 			/>
 		{/each}
-	</div>
-</div>
-
-<div class="tri">
-	<div class="picks">
+  </div>
+  <div class="bp picks">
 		{#each Array(5) as _, i}
 			<div>
 				<h2 class="blue {selectedMap['bluePick' + i] ? 'gold' : ''}">B{i + 1}</h2>
@@ -175,8 +170,23 @@
 				/>
 			</div>
 		{/each}
-	</div>
-	<div class="picker">
+  </div>
+  <div class="rp picks">
+		{#each Array(5) as _, i}
+			<div>
+				<ChampionFrame
+					bind:championID={picks.red[i]}
+					on:message={handle}
+					settable={true}
+					big={true}
+					location={'redPick' + i}
+					bind:selected={selectedMap['redPick' + i]}
+				/>
+				<h2 class="red {selectedMap['redPick' + i] ? 'gold' : ''}">R{i + 1}</h2>
+			</div>
+		{/each}
+  </div>
+  <div class="pp picker">
 		<div class="bar">
 			<div class="filter">
 				{#key update}
@@ -214,68 +224,58 @@
 				/>
 			{/each}
 		</div>
-	</div>
-	<div class="picks">
-		{#each Array(5) as _, i}
-			<div>
-				<ChampionFrame
-					bind:championID={picks.red[i]}
-					on:message={handle}
-					settable={true}
-					big={true}
-					location={'redPick' + i}
-					bind:selected={selectedMap['redPick' + i]}
-				/>
-				<h2 class="red {selectedMap['redPick' + i] ? 'gold' : ''}">R{i + 1}</h2>
-			</div>
-		{/each}
-	</div>
+  </div>
 </div>
 
 <style>
-	.bans-container {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-	}
-
-	.tri {
+	.grid { 
 		display: grid;
-		grid-template-columns: min-content 1fr min-content;
-
-		gap: var(--section-gap);
-	}
-
-	.bans {
-		display: flex;
-		flex: 0 1 auto;
-		flex-direction: row;
-		justify-content: center;
-		flex-wrap: wrap;
-		gap: var(--section-gap);
+	grid-template-columns: 1fr;
+	grid-template-rows: min-content min-content min-content min-content 1fr;
+	gap: var(--section-gap) var(--section-gap);
+	grid-auto-flow: row;
+	grid-template-areas:
+		"bb"
+		"rb"
+		"bp"
+		"rp"
+		"pp";
 	}
 
 	.picks {
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		gap: var(--section-gap);
+	}
+
+	.picks > div {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		gap: var(--section-gap);
 	}
 
-	.picks > div {
+	.bb { grid-area: bb; }
+
+	.rb { grid-area: rb; }
+
+	.bp { grid-area: bp; }
+
+	.rp { grid-area: rp; }
+
+	.pp { grid-area: pp; }
+
+	.bans {
 		display: flex;
 		flex-direction: row;
-		align-items: center;
+		justify-content: center;
 		gap: var(--section-gap);
 	}
 
 	.picks > div > h2 {
 		width: auto;
 		height: auto;
-	}
-
-	.picks div:nth-child(3) {
-		margin-bottom: calc(1.5 * var(--section-gap));
 	}
 
 	.picker {
@@ -322,8 +322,7 @@
 	.palette {
 		display: grid;
 		justify-items: center;
-		/* TODO Determine if 6 or 7 columns looks best */
-		grid-template-columns: repeat(7, minmax(min-content, 1fr));
+		grid-template-columns: repeat(6, minmax(min-content, 1fr));
 		grid-auto-rows: min-content;
 		gap: var(--section-gap);
 
@@ -341,5 +340,36 @@
 
 	.gold {
 		color: var(--clr-gold);
+	}
+
+	@media screen and (min-width: 80rem) {
+		/* desktop */
+		.grid {  
+			grid-template-columns: min-content 1fr 1fr min-content;
+			grid-template-rows: min-content 1fr;
+			grid-template-areas:
+				"bb bb rb rb"
+				"bp pp pp rp";
+		}
+
+		.bb {
+			justify-content: left;
+		}
+
+		.rb {
+			justify-content: right;
+		}
+
+		.picks {
+			flex-direction: column;
+		}
+
+		.picks > div {
+			flex-direction: row;
+		}
+
+		.palette {
+			grid-template-columns: repeat(7, minmax(min-content, 1fr));
+		}
 	}
 </style>
