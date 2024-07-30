@@ -132,7 +132,7 @@
 </script>
 
 <div class="grid">
-  <div class="bb bans">
+	<div class="bb bans">
 		{#each Array(5) as _, i}
 			<ChampionFrame
 				bind:championID={blueBans[i]}
@@ -143,8 +143,8 @@
 				bind:selected={selectedMap['blueBan' + i]}
 			/>
 		{/each}
-  </div>
-  <div class="rb bans">
+	</div>
+	<div class="rb bans">
 		{#each Array(5) as _, i}
 			<ChampionFrame
 				bind:championID={redBans[i]}
@@ -155,8 +155,8 @@
 				bind:selected={selectedMap['redBan' + i]}
 			/>
 		{/each}
-  </div>
-  <div class="bp picks">
+	</div>
+	<div class="bp picks">
 		{#each Array(5) as _, i}
 			<div>
 				<h2 class="blue {selectedMap['bluePick' + i] ? 'gold' : ''}">B{i + 1}</h2>
@@ -170,8 +170,8 @@
 				/>
 			</div>
 		{/each}
-  </div>
-  <div class="rp picks">
+	</div>
+	<div class="rp picks">
 		{#each Array(5) as _, i}
 			<div>
 				<ChampionFrame
@@ -185,8 +185,8 @@
 				<h2 class="red {selectedMap['redPick' + i] ? 'gold' : ''}">R{i + 1}</h2>
 			</div>
 		{/each}
-  </div>
-  <div class="pp picker">
+	</div>
+	<div class="pp picker">
 		<div class="bar">
 			<div class="filter">
 				{#key update}
@@ -224,22 +224,22 @@
 				/>
 			{/each}
 		</div>
-  </div>
+	</div>
 </div>
 
 <style>
-	.grid { 
+	.grid {
 		display: grid;
-	grid-template-columns: 1fr;
-	grid-template-rows: min-content min-content min-content min-content 1fr;
-	gap: var(--section-gap) var(--section-gap);
-	grid-auto-flow: row;
-	grid-template-areas:
-		"bb"
-		"rb"
-		"bp"
-		"rp"
-		"pp";
+		grid-template-columns: 1fr;
+		grid-template-rows: min-content min-content min-content min-content 1fr;
+		gap: var(--section-gap) var(--section-gap);
+		grid-auto-flow: row;
+		grid-template-areas:
+			'bb'
+			'rb'
+			'bp'
+			'rp'
+			'pp';
 	}
 
 	.picks {
@@ -256,15 +256,25 @@
 		gap: var(--section-gap);
 	}
 
-	.bb { grid-area: bb; }
+	.bb {
+		grid-area: bb;
+	}
 
-	.rb { grid-area: rb; }
+	.rb {
+		grid-area: rb;
+	}
 
-	.bp { grid-area: bp; }
+	.bp {
+		grid-area: bp;
+	}
 
-	.rp { grid-area: rp; }
+	.rp {
+		grid-area: rp;
+	}
 
-	.pp { grid-area: pp; }
+	.pp {
+		grid-area: pp;
+	}
 
 	.bans {
 		display: flex;
@@ -344,12 +354,12 @@
 
 	@media screen and (min-width: 80rem) {
 		/* desktop */
-		.grid {  
+		.grid {
 			grid-template-columns: min-content 1fr 1fr min-content;
 			grid-template-rows: min-content 1fr;
 			grid-template-areas:
-				"bb bb rb rb"
-				"bp pp pp rp";
+				'bb bb rb rb'
+				'bp pp pp rp';
 		}
 
 		.bb {
