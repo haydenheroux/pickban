@@ -131,8 +131,8 @@
 	}
 </script>
 
-<div class="bans-container">
-	<div class="bans">
+<div class="grid">
+  <div class="bb bans">
 		{#each Array(5) as _, i}
 			<ChampionFrame
 				bind:championID={blueBans[i]}
@@ -143,8 +143,8 @@
 				bind:selected={selectedMap['blueBan' + i]}
 			/>
 		{/each}
-	</div>
-	<div class="bans">
+  </div>
+  <div class="rb bans">
 		{#each Array(5) as _, i}
 			<ChampionFrame
 				bind:championID={redBans[i]}
@@ -155,11 +155,8 @@
 				bind:selected={selectedMap['redBan' + i]}
 			/>
 		{/each}
-	</div>
-</div>
-
-<div class="tri">
-	<div class="picks">
+  </div>
+  <div class="bp picks">
 		{#each Array(5) as _, i}
 			<div>
 				<h2 class="blue {selectedMap['bluePick' + i] ? 'gold' : ''}">B{i + 1}</h2>
@@ -173,8 +170,23 @@
 				/>
 			</div>
 		{/each}
-	</div>
-	<div class="picker">
+  </div>
+  <div class="rp picks">
+		{#each Array(5) as _, i}
+			<div>
+				<ChampionFrame
+					bind:championID={picks.red[i]}
+					on:message={handle}
+					settable={true}
+					big={true}
+					location={'redPick' + i}
+					bind:selected={selectedMap['redPick' + i]}
+				/>
+				<h2 class="red {selectedMap['redPick' + i] ? 'gold' : ''}">R{i + 1}</h2>
+			</div>
+		{/each}
+  </div>
+  <div class="pp picker">
 		<div class="bar">
 			<div class="filter">
 				{#key update}
@@ -212,46 +224,30 @@
 				/>
 			{/each}
 		</div>
-	</div>
-	<div class="picks">
-		{#each Array(5) as _, i}
-			<div>
-				<ChampionFrame
-					bind:championID={picks.red[i]}
-					on:message={handle}
-					settable={true}
-					big={true}
-					location={'redPick' + i}
-					bind:selected={selectedMap['redPick' + i]}
-				/>
-				<h2 class="red {selectedMap['redPick' + i] ? 'gold' : ''}">R{i + 1}</h2>
-			</div>
-		{/each}
-	</div>
+  </div>
 </div>
 
 <style>
-	.bans-container {
-		display: flex;
-		flex-direction: column;
-		gap: var(--main-gap);
-	}
-
-	@media screen and (min-width: 70rem) {
-		/* desktop */
-		.bans-container {
-			display: flex;
-			flex-direction: row;
-			justify-content: space-between;
-		}
-	}
-
-	.tri {
+	.grid {  
 		display: grid;
-		grid-template-columns: min-content 1fr min-content;
-
-		gap: var(--section-gap);
+		grid-template-columns: min-content 1fr 1fr min-content;
+		grid-template-rows: min-content 1fr;
+		gap: var(--section-gap) var(--section-gap);
+		grid-auto-flow: row;
+		grid-template-areas:
+			"bb bb rb rb"
+			"bp pp pp rp";
 	}
+
+	.bb { grid-area: bb; }
+
+	.rb { grid-area: rb; }
+
+	.bp { grid-area: bp; }
+
+	.rp { grid-area: rp; }
+
+	.pp { grid-area: pp; }
 
 	.bans {
 		display: flex;
@@ -279,10 +275,6 @@
 	.picks > div > h2 {
 		width: auto;
 		height: auto;
-	}
-
-	.picks div:nth-child(3) {
-		margin-bottom: calc(1.5 * var(--section-gap));
 	}
 
 	.picker {
