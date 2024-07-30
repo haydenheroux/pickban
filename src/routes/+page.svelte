@@ -228,15 +228,32 @@
 </div>
 
 <style>
-	.grid {  
+	.grid { 
 		display: grid;
-		grid-template-columns: min-content 1fr 1fr min-content;
-		grid-template-rows: min-content 1fr;
-		gap: var(--section-gap) var(--section-gap);
-		grid-auto-flow: row;
-		grid-template-areas:
-			"bb bb rb rb"
-			"bp pp pp rp";
+	grid-template-columns: 1fr;
+	grid-template-rows: min-content min-content min-content min-content 1fr;
+	gap: var(--section-gap) var(--section-gap);
+	grid-auto-flow: row;
+	grid-template-areas:
+		"bb"
+		"rb"
+		"bp"
+		"rp"
+		"pp";
+	}
+
+	.picks {
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		gap: var(--section-gap);
+	}
+
+	.picks > div {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--section-gap);
 	}
 
 	.bb { grid-area: bb; }
@@ -251,24 +268,8 @@
 
 	.bans {
 		display: flex;
-		flex: 0 1 auto;
 		flex-direction: row;
 		justify-content: center;
-		flex-wrap: wrap;
-		gap: var(--section-gap);
-	}
-
-	.picks {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: var(--section-gap);
-	}
-
-	.picks > div {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
 		gap: var(--section-gap);
 	}
 
@@ -321,8 +322,7 @@
 	.palette {
 		display: grid;
 		justify-items: center;
-		/* TODO Determine if 6 or 7 columns looks best */
-		grid-template-columns: repeat(7, minmax(min-content, 1fr));
+		grid-template-columns: repeat(6, minmax(min-content, 1fr));
 		grid-auto-rows: min-content;
 		gap: var(--section-gap);
 
@@ -340,5 +340,36 @@
 
 	.gold {
 		color: var(--clr-gold);
+	}
+
+	@media screen and (min-width: 80rem) {
+		/* desktop */
+		.grid {  
+			grid-template-columns: min-content 1fr 1fr min-content;
+			grid-template-rows: min-content 1fr;
+			grid-template-areas:
+				"bb bb rb rb"
+				"bp pp pp rp";
+		}
+
+		.bb {
+			justify-content: left;
+		}
+
+		.rb {
+			justify-content: right;
+		}
+
+		.picks {
+			flex-direction: column;
+		}
+
+		.picks > div {
+			flex-direction: row;
+		}
+
+		.palette {
+			grid-template-columns: repeat(7, minmax(min-content, 1fr));
+		}
 	}
 </style>
