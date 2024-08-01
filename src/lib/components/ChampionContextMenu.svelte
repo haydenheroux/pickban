@@ -1,23 +1,37 @@
 <script lang="ts">
 	import { getChampionNameOrNull } from '$lib/data/data_dragon';
 	import { entries } from '$lib/data/stores';
+	import { open } from '$lib/data/assets';
 	export let championID: string | null = null;
 
 	export let x: number;
 	export let y: number;
 
 	let name: string;
+	let url: string;
 
 	$: name = getChampionNameOrNull(championID);
+	$: url = formatURL(name);
+
+	function formatURL(name: string): string {
+		const formatted = name.replace(/[^\x00-\x7F]/g, "").toLowerCase();
+
+		return `https://lolalytics.com/lol/${formatted}/build/`;
+	}
 </script>
 
 <nav
-	class="context-menu"
 	style="position: absolute; left: {x}px; top: {y}px;"
 	on:contextmenu|preventDefault={() => {}}
 >
 	<ul>
-		<li><p>{name ? name : ''}</p></li>
+		<li class="title">
+			<a href="{url}" target="_blank">
+				<span>{name ? name : ''}</span>
+				<!-- svelte-ignore a11y-missing-attribute -->
+				<img src={open} />
+			</a>
+		</li>
 		<div class="separator"></div>
 		{#each entries as entry}
 			{#each entry.assets as { type, src }}
@@ -49,7 +63,7 @@
 </nav>
 
 <style>
-	.context-menu {
+	nav {
 		display: inline-flex;
 		border: 1px solid var(--clr-border);
 		background-color: var(--clr-background);
@@ -61,24 +75,35 @@
 		z-index: 1;
 	}
 
-	.context-menu ul {
+	nav ul {
 		margin: 0.5rem;
 		padding: 0;
 	}
 
-	.context-menu ul li {
+	nav ul li {
 		display: block;
 		list-style-type: none;
 		color: var(--clr-foreground);
 	}
 
-	.context-menu ul li div {
+	nav ul li.title a {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: var(--header-gap);
+	}
+
+	nav ul li.title a img {
+		height: auto;
+	}
+
+	nav ul li div {
 		display: flex;
 		gap: 0.25rem;
 		align-items: center;
 	}
 
-	.context-menu ul .separator:not(:last-of-type) {
+	nav ul .separator:not(:last-of-type) {
 		border-bottom: 1px solid var(--clr-neutral-800);
 		border-radius: var(--radius-element);
 
@@ -100,11 +125,11 @@
 		padding: 0;
 	}
 
-	.context-menu ul li div:hover button {
+	nav ul li div:hover button {
 		color: var(--clr-foreground);
 	}
 
-	.context-menu ul li div:hover img {
+	nav ul li div:hover img {
 		color: var(--clr-foreground);
 		filter: grayscale() brightness(200%);
 	}

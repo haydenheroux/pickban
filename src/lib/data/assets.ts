@@ -35,4 +35,6 @@ export const utilityAssets = [asset(Utility.CrowdControl, 'types/cc.png')];
 
 export const close = 'ui/close.png';
 
+export const open = 'ui/open.svg';
+
 export const map = 'map/map.jpg';
