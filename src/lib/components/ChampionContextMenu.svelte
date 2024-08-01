@@ -14,19 +14,16 @@
 	$: url = formatURL(name);
 
 	function formatURL(name: string): string {
-		const formatted = name.replace(/[^\x00-\x7F]/g, "").toLowerCase();
+		const formatted = name.replace(/[^\x00-\x7F]/g, '').toLowerCase();
 
 		return `https://lolalytics.com/lol/${formatted}/build/`;
 	}
 </script>
 
-<nav
-	style="position: absolute; left: {x}px; top: {y}px;"
-	on:contextmenu|preventDefault={() => {}}
->
+<nav style="position: absolute; left: {x}px; top: {y}px;" on:contextmenu|preventDefault={() => {}}>
 	<ul>
 		<li class="title">
-			<a href="{url}" target="_blank">
+			<a href={url} target="_blank">
 				<span>{name ? name : ''}</span>
 				<!-- svelte-ignore a11y-missing-attribute -->
 				<img src={open} />

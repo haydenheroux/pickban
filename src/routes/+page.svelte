@@ -159,7 +159,7 @@
 	<div class="blue picks">
 		{#each Array(5) as _, i}
 			<div>
-				<h2 class="{selectedMap['bluePick' + i] ? 'gold' : ''}">B{i + 1}</h2>
+				<h2 class={selectedMap['bluePick' + i] ? 'gold' : ''}>B{i + 1}</h2>
 				<ChampionFrame
 					bind:championID={picks.blue[i]}
 					on:message={handle}
@@ -182,7 +182,7 @@
 					location={'redPick' + i}
 					bind:selected={selectedMap['redPick' + i]}
 				/>
-				<h2 class="{selectedMap['redPick' + i] ? 'gold' : ''}">R{i + 1}</h2>
+				<h2 class={selectedMap['redPick' + i] ? 'gold' : ''}>R{i + 1}</h2>
 			</div>
 		{/each}
 	</div>
@@ -242,7 +242,8 @@
 			'pp';
 	}
 
-	.red.picks, .red.bans{
+	.red.picks,
+	.red.bans {
 		margin-bottom: var(--section-gap);
 	}
 
@@ -364,7 +365,8 @@
 				'bp pp pp rp';
 		}
 
-		.red.bans, .red.picks {
+		.red.bans,
+		.red.picks {
 			margin-bottom: 0;
 		}
 
