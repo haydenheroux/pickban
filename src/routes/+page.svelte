@@ -242,6 +242,10 @@
 			'pp';
 	}
 
+	.rb, .rp {
+		margin-bottom: var(--section-gap);
+	}
+
 	.picks {
 		display: flex;
 		flex-direction: row;
@@ -360,6 +364,10 @@
 			grid-template-areas:
 				'bb bb rb rb'
 				'bp pp pp rp';
+		}
+
+		.rb, .rp {
+			margin-bottom: 0;
 		}
 
 		.bb {
