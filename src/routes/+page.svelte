@@ -132,7 +132,7 @@
 </script>
 
 <div class="grid">
-	<div class="bb bans">
+	<div class="blue bans">
 		{#each Array(5) as _, i}
 			<ChampionFrame
 				bind:championID={blueBans[i]}
@@ -144,7 +144,7 @@
 			/>
 		{/each}
 	</div>
-	<div class="rb bans">
+	<div class="red bans">
 		{#each Array(5) as _, i}
 			<ChampionFrame
 				bind:championID={redBans[i]}
@@ -156,10 +156,10 @@
 			/>
 		{/each}
 	</div>
-	<div class="bp picks">
+	<div class="blue picks">
 		{#each Array(5) as _, i}
 			<div>
-				<h2 class="blue {selectedMap['bluePick' + i] ? 'gold' : ''}">B{i + 1}</h2>
+				<h2 class="{selectedMap['bluePick' + i] ? 'gold' : ''}">B{i + 1}</h2>
 				<ChampionFrame
 					bind:championID={picks.blue[i]}
 					on:message={handle}
@@ -171,7 +171,7 @@
 			</div>
 		{/each}
 	</div>
-	<div class="rp picks">
+	<div class="red picks">
 		{#each Array(5) as _, i}
 			<div>
 				<ChampionFrame
@@ -182,11 +182,11 @@
 					location={'redPick' + i}
 					bind:selected={selectedMap['redPick' + i]}
 				/>
-				<h2 class="red {selectedMap['redPick' + i] ? 'gold' : ''}">R{i + 1}</h2>
+				<h2 class="{selectedMap['redPick' + i] ? 'gold' : ''}">R{i + 1}</h2>
 			</div>
 		{/each}
 	</div>
-	<div class="pp picker">
+	<div class="picker">
 		<div class="bar">
 			<div class="filter">
 				{#key update}
@@ -242,7 +242,7 @@
 			'pp';
 	}
 
-	.rb, .rp {
+	.red.picks, .red.bans{
 		margin-bottom: var(--section-gap);
 	}
 
@@ -260,24 +260,20 @@
 		gap: var(--section-gap);
 	}
 
-	.bb {
+	.blue.bans {
 		grid-area: bb;
 	}
 
-	.rb {
+	.red.bans {
 		grid-area: rb;
 	}
 
-	.bp {
+	.blue.picks {
 		grid-area: bp;
 	}
 
-	.rp {
+	.red.picks {
 		grid-area: rp;
-	}
-
-	.pp {
-		grid-area: pp;
 	}
 
 	.bans {
@@ -293,6 +289,8 @@
 	}
 
 	.picker {
+		grid-area: pp;
+
 		display: flex;
 		flex-direction: column;
 		gap: var(--section-gap);
@@ -366,15 +364,15 @@
 				'bp pp pp rp';
 		}
 
-		.rb, .rp {
+		.red.bans, .red.picks {
 			margin-bottom: 0;
 		}
 
-		.bb {
+		.blue.bans {
 			justify-content: left;
 		}
 
-		.rb {
+		.red.bans {
 			justify-content: right;
 		}
 
